@@ -1,61 +1,4 @@
-function detectWebAuthnSupport(): boolean {
-    if (window.PublicKeyCredential === undefined ||
-        typeof window.PublicKeyCredential !== "function") {
-        var errorMessage = "Oh no! This browser doesn't currently support WebAuthn."
-        if (window.location.protocol === "http:" && (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1")) {
-            errorMessage = "WebAuthn only supports secure connections. For testing over HTTP, you can use the origin \"localhost\"."
-        }
-
-        // browser not supported or https is disabled
-        return false;
-    }
-
-    // Browser suppported and https enabled
-    return true;
-}
-
-function string2buffer(str) {
-    return (new Uint8Array(str.length)).map(function(x, i) {
-        return str.charCodeAt(i)
-    });
-}
-
-// Encode an ArrayBuffer into a base64 string.
-function bufferEncode(value) {
-    return base64js.fromByteArray(value)
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=/g, "");
-}
-
-// Don't drop any blanks
-// decode
-function bufferDecode(value) {
-    return Uint8Array.from(atob(value), c => c.charCodeAt(0));
-}
-
-function buffer2string(buf) {
-    let str = "";
-    if (!(buf.constructor === Uint8Array)) {
-        buf = new Uint8Array(buf);
-    }
-    buf.map(function(x) {
-        return str += String.fromCharCode(x)
-    });
-    return str;
-}
-
-var state = {
-    createResponse: null,
-    publicKeyCredential: null,
-    credential: null,
-    user: {
-        name: "testuser@example.com",
-        displayName: "testuser",
-    },
-}
-
-function setUser(userName: string, displayName: string) {
+function setUser(state: any, userName: string, displayName: string) {
     console.log(userName, displayName);
     state.user.name = userName.toLowerCase().replace(/\s/g, '');
     state.user.displayName = userName.toLowerCase();
@@ -64,11 +7,11 @@ function setUser(userName: string, displayName: string) {
     localStorage.setItem("username", userName);
 }
 
-function checkUserExists(): Promise<boolean> {
+function checkUserExists(state: any): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
         try
         {
-            fetch.get('/user/' + state.user.name + '/exists')
+            fetch('/user/' + state.user.name + '/exists')
             .then(function(response) {
                 return true;
             }).catch(function() {
@@ -81,13 +24,13 @@ function checkUserExists(): Promise<boolean> {
     });
 }
 
-function getCredentials(): Promise<void> {
-    new Promise<void>((resolve, reject) => {
+function getCredentials(state: any): Promise<object> {
+    return new Promise<object>((resolve, reject) => {
         try {
             fetch('/credential/' + state.user.name)
             .then(function(response) {
                 console.log(response)
-                resolve();
+                resolve(response);
             }).catch(function(error) {
                 console.log(`Error while resolving user credenitals for ${state.user.name}`);
                 reject();
@@ -99,7 +42,7 @@ function getCredentials(): Promise<void> {
     });
 }
 
-function makeCredential() {
+function makeCredential(state: any) {
     console.log("Fetching options for new credential");
 
     setUser();

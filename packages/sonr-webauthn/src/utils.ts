@@ -1,5 +1,12 @@
 import { BrowserSupport } from "./enums";
 import { storageKey } from "./constants";
+import { fromByteArray } from "base64-js";
+
+export function createCredentials(publicKey: any): Promise<void | Credential> {
+    return navigator.credentials.create({
+        publicKey: publicKey
+    });
+}
 
 export function detectWebAuthnSupport(): BrowserSupport {
     if (window.PublicKeyCredential === undefined ||
@@ -18,17 +25,17 @@ export function detectWebAuthnSupport(): BrowserSupport {
     return BrowserSupport.Supported;
 }
 
-export function getStorageKey() { return storageKey; }
+export function getStorageKey(): string  { return storageKey; }
 
-function string2buffer(data: string) {
+export function string2buffer(data: string) {
     return (new Uint8Array(data.length)).map(function(x, i) {
-        return data.charCodeAt(i)
+        return data.charCodeAt(i);
     });
 }
 
 // Encode an ArrayBuffer into a base64 string.
-function bufferEncode(value: Uint8Array) {
-    return base64js.fromByteArray(value)
+export function bufferEncode(value: Uint8Array): string {
+    return fromByteArray(value)
         .replace(/\+/g, "-")
         .replace(/\//g, "_")
         .replace(/=/g, "");
@@ -36,17 +43,19 @@ function bufferEncode(value: Uint8Array) {
 
 // Don't drop any blanks
 // decode
-function bufferDecode(value) {
+export function bufferDecode(value): Uint8Array {
     return Uint8Array.from(atob(value), c => c.charCodeAt(0));
 }
 
-function buffer2string(buf: any) {
+export function buffer2string(buf: any) {
     let str = "";
     if (!(buf.constructor === Uint8Array)) {
         buf = new Uint8Array(buf);
     }
+
     buf.map(function(x: any) {
         return str += String.fromCharCode(x);
     });
+
     return str;
 }

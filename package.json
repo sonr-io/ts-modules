@@ -1,0 +1,22 @@
+{
+  "name": "root",
+  "version": "1.0.0",
+  "description": "Sonr typescript package mono repo",
+  "scripts": {
+    "bootstrap": "lerna run bootstrap",
+    ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sonr-io/TypeScript-Modules.git"
+  },
+  "author": "sonr",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sonr-io/TypeScript-Modules/issues"
+  },
+  "homepage": "https://github.com/sonr-io/TypeScript-Modules#readme",
+  "devDependencies": {
+    "lerna": "^4.0.0"
+  }
+}

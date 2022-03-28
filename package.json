@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Sonr typescript package mono repo",
   "scripts": {
-    "bootstrap": "lerna run bootstrap",
-    ""
+    "bootstrap": "lerna run bootstrap"
   },
   "repository": {
     "type": "git",
@@ -17,6 +16,7 @@
   },
   "homepage": "https://github.com/sonr-io/TypeScript-Modules#readme",
   "devDependencies": {
-    "lerna": "^4.0.0"
+    "lerna": "^4.0.0",
+    "typescript": "^4.6.3"
   }
 }

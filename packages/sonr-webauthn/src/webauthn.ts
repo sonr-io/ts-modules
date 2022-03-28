@@ -1,13 +1,11 @@
-function setUser(state: any, userName: string, displayName: string) {
-    console.log(userName, displayName);
-    state.user.name = userName.toLowerCase().replace(/\s/g, '');
-    state.user.displayName = userName.toLowerCase();
+import { CredentialOptions } from "./credentials";
+import { CreateSessionState, GetSessionState } from "./state";
+import { bufferDecode } from "./utils";
 
-    // Store
-    localStorage.setItem("username", userName);
-}
+CreateSessionState();
+const state: any = GetSessionState();
 
-function checkUserExists(state: any): Promise<boolean> {
+function checkUserExists(): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
         try
         {
@@ -42,10 +40,9 @@ function getCredentials(state: any): Promise<object> {
     });
 }
 
-function makeCredential(state: any) {
+function makeCredential(name: string) {
     console.log("Fetching options for new credential");
-
-    setUser();
+    
     var credential = null;
     var attestation_type = $('#select-attestation').find(':selected').val();
     var authenticator_attachment = $('#select-authenticator').find(':selected').val();
@@ -54,14 +51,16 @@ function makeCredential(state: any) {
     var resident_key_requirement = $('#select-residency').find(':selected').val();
     var txAuthSimple_extension = $('#extension-input').val();
 
-    $.get('/makeCredential/' + state.user.name, {
-            attType: attestation_type,
-            authType: authenticator_attachment,
-            userVerification: user_verification,
-            residentKeyRequirement: resident_key_requirement,
-            txAuthExtension: txAuthSimple_extension,
-        }, null, 'json')
-        .done(function(makeCredentialOptions) {
+    fetch('/makeCredential/' + state.user.name, { 
+        method: "POST",
+        body: JSON.stringify({
+                attType: attestation_type,
+                authType: authenticator_attachment,
+                userVerification: user_verification,
+                residentKeyRequirement: resident_key_requirement,
+                txAuthExtension: txAuthSimple_extension,
+            })
+        }).then((makeCredentialOptions: Response) => {
             makeCredentialOptions.publicKey.challenge = bufferDecode(makeCredentialOptions.publicKey.challenge);
             makeCredentialOptions.publicKey.user.id = bufferDecode(makeCredentialOptions.publicKey.user.id);
             if (makeCredentialOptions.publicKey.excludeCredentials) {
@@ -70,13 +69,6 @@ function makeCredential(state: any) {
                 }
             }
             console.log("Credential Creation Options");
-            navigator.credentials.create({
-                publicKey: makeCredentialOptions.publicKey
-            }).then(function(newCredential) {
-                state.createResponse = newCredential;
-                registerNewCredential(newCredential);
-                window.location = "/payment";
-            })
         });
 }
 

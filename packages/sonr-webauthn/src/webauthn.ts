@@ -95,8 +95,8 @@ function registerNewCredential(newCredential: any) {
 };
 
 
-function getAssertion(userVerification: string, txAuthSimple: string, name: string) {
-    new Promise((resolve, reject) => {
+function getAssertion(userVerification: string, txAuthSimple: string, name: string): Promise<PublicKeyCredentialCreationOptions> {
+    return new Promise((resolve, reject) => {
         state.user.name = name;
         fetch('/assertion/' + state.user.name, {
             body: JSON.stringify({
@@ -111,47 +111,37 @@ function getAssertion(userVerification: string, txAuthSimple: string, name: stri
                 listItem.id = bufferDecode(listItem.id)
             });
             console.log(makeAssertionOptions);
-            
-            navigator.credentials.get({
-                publicKey: makeAssertionOptions.publicKey
-            }).then(function(credential) {
-                console.log(credential);
-                verifyAssertion(credential);
-            }).catch(function(err) {
+            resolve(makeAssertionOptions.publicKey);
+        }).catch(function(err) {
                 console.log(err.name);
-            });
+                reject();
         });
     });
 }
 
-function verifyAssertion(assertedCredential) {
-    // Move data into Arrays incase it is super long
-    console.log('verifying assterted user credentials');
-    let authData = new Uint8Array(assertedCredential.response.authenticatorData);
-    let clientDataJSON = new Uint8Array(assertedCredential.response.clientDataJSON);
-    let rawId = new Uint8Array(assertedCredential.rawId);
-    let sig = new Uint8Array(assertedCredential.response.signature);
-    let userHandle = new Uint8Array(assertedCredential.response.userHandle);
-    $.ajax({
-        url: '/assertion',
-        type: 'POST',
-        data: JSON.stringify({
-            id: assertedCredential.id,
-            rawId: bufferEncode(rawId),
-            type: assertedCredential.type,
-            response: {
-                authenticatorData: bufferEncode(authData),
-                clientDataJSON: bufferEncode(clientDataJSON),
-                signature: bufferEncode(sig),
-                userHandle: bufferEncode(userHandle),
-            },
-        }),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function(response) {
-            window.location = "/dashboard";
-            console.log(response)
-        }
+function verifyAssertion(assertedCredential): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+        // Move data into Arrays incase it is super long
+        console.log('verifying assterted user credentials');
+        let authData = new Uint8Array(assertedCredential.authenticatorData);
+        let clientDataJSON = new Uint8Array(assertedCredential.clientDataJSON);
+        let rawId = new Uint8Array(assertedCredential.rawId);
+        let sig = new Uint8Array(assertedCredential.signature);
+        let userHandle = new Uint8Array(assertedCredential.response.userHandle);
+        fetch('/assertion', {
+            method: 'POST',
+            body: JSON.stringify({
+                id: assertedCredential.id,
+                rawId: bufferEncode(rawId),
+                type: assertedCredential.type,
+                response: {
+                    authenticatorData: bufferEncode(authData),
+                    clientDataJSON: bufferEncode(clientDataJSON),
+                    signature: bufferEncode(sig),
+                    userHandle: bufferEncode(userHandle),
+                },
+            })
+        });
     });
 }
 

@@ -4,7 +4,10 @@ import { detectWebAuthnSupport } from "./utils";
 /*
 
 */
-function createCredentialOptions(serverContext: string, userName: string, displayName: string): PublicKeyCredentialCreationOptions {
+function createCredentialOptions(
+    serverContext: string, 
+    userName: string, 
+    displayName: string): PublicKeyCredentialCreationOptions {
     return {
         challenge: Uint8Array.from(
             serverContext, c => c.charCodeAt(0)),
@@ -53,9 +56,11 @@ export async function createCredentials(
 };
 
 /*
-
+    Navigator Credentials to query on the endpoint
 */
 export async function getCredentials(pk: PublicKeyCredentialRequestOptions): Promise<Credential | null> {
+    if (!pk) return null;
+    
     try
     {
         const browserSupport: BrowserSupport = detectWebAuthnSupport();
@@ -64,7 +69,7 @@ export async function getCredentials(pk: PublicKeyCredentialRequestOptions): Pro
         const credResponse = await navigator.credentials.get({
             publicKey: pk
         });
-        
+
         return credResponse;
     } catch(e)
     {

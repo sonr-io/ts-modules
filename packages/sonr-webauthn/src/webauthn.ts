@@ -8,11 +8,13 @@ function checkUserExists(): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
         try
         {
-            fetch('/user/' + state.user.name + '/exists')
-            .then(function(response) {
-                return true;
+            if (!state || !state.user.name)
+                resolve(false);
+
+            fetch('/user/' + state.user.name + '/exists').then(function(response) {
+                resolve(true);
             }).catch(function() {
-                return false;
+                resolve(false);
             });
         } catch(e)
         {
@@ -24,8 +26,7 @@ function checkUserExists(): Promise<boolean> {
 function getCredentials(state: any): Promise<object> {
     return new Promise<object>((resolve, reject) => {
         try {
-            fetch('/credential/' + state.user.name)
-            .then(function(response) {
+            fetch('/credential/' + state.user.name).then(function(response) {
                 console.log(response)
                 resolve(response);
             }).catch(function(error) {
@@ -39,39 +40,49 @@ function getCredentials(state: any): Promise<object> {
     });
 }
 
-function makeCredential(name: string) {
-    console.log("Fetching options for new credential");
+function makeCredential(name: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        try {
+            var credential = null;
     
-    var credential = null;
-    
-    var attestation_type = "";
-    var authenticator_attachment = "";
-
-    var user_verification = "";
-    var resident_key_requirement = "";
-    var txAuthSimple_extension = "";
-    
-    checkUserExists().then(function() {
-        fetch('/makeCredential/' + state.user.name, { 
-            method: "POST",
-            body: JSON.stringify({
-                    attType: attestation_type,
-                    authType: authenticator_attachment,
-                    userVerification: user_verification,
-                    residentKeyRequirement: resident_key_requirement,
-                    txAuthExtension: txAuthSimple_extension,
-                })
-            }).then((makeCredentialOptions: any) => {
-                makeCredentialOptions.publicKey.challenge = bufferDecode(makeCredentialOptions.publicKey.challenge);
-                makeCredentialOptions.publicKey.user.id = bufferDecode(makeCredentialOptions.publicKey.user.id);
-                if (makeCredentialOptions.publicKey.excludeCredentials) {
-                    for (var i = 0; i < makeCredentialOptions.publicKey.excludeCredentials.length; i++) {
-                        makeCredentialOptions.publicKey.excludeCredentials[i].id = bufferDecode(makeCredentialOptions.publicKey.excludeCredentials[i].id);
-                    }
-                }
-                console.log(`Credential Creation Options: ${makeCredentialOptions}`);
+            var attestation_type = "";
+            var authenticator_attachment = "";
+        
+            var user_verification = "";
+            var resident_key_requirement = "";
+            var txAuthSimple_extension = "";
+            
+            checkUserExists().then(function(resp: boolean) {
+                if (!resp)
+                    reject();
+                fetch('/makeCredential/' + state.user.name, { 
+                    method: "POST",
+                    body: JSON.stringify({
+                            attType: attestation_type,
+                            authType: authenticator_attachment,
+                            userVerification: user_verification,
+                            residentKeyRequirement: resident_key_requirement,
+                            txAuthExtension: txAuthSimple_extension,
+                        })
+                    }).then((makeCredentialOptions: any) => {
+                        makeCredentialOptions.publicKey.challenge = bufferDecode(makeCredentialOptions.publicKey.challenge);
+                        makeCredentialOptions.publicKey.user.id = bufferDecode(makeCredentialOptions.publicKey.user.id);
+                        if (makeCredentialOptions.publicKey.excludeCredentials) {
+                            for (var i = 0; i < makeCredentialOptions.publicKey.excludeCredentials.length; i++) {
+                                makeCredentialOptions.publicKey.excludeCredentials[i].id = bufferDecode(makeCredentialOptions.publicKey.excludeCredentials[i].id);
+                            }
+                        }
+                        console.log(`Credential Creation Options: ${makeCredentialOptions}`);
+                    }).catch(() => {
+                        reject();
+                    });
             });
+        } catch (e)
+        {
+            console.error(`Error while making user credentials: ${e.message}`); // what to do if the server returns resp code?
+        }
     });
+    console.log("Fetching options for new credential");
 }
 
 // This should be used to verify the auth data with the server

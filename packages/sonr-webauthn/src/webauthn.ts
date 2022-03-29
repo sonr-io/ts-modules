@@ -1,4 +1,3 @@
-import { CredentialOptions } from "./credentials";
 import { CreateSessionState, GetSessionState } from "./state";
 import { bufferDecode, bufferEncode } from "./utils";
 
@@ -44,12 +43,14 @@ function makeCredential(name: string) {
     console.log("Fetching options for new credential");
     
     var credential = null;
-    var attestation_type = $('#select-attestation').find(':selected').val();
-    var authenticator_attachment = $('#select-authenticator').find(':selected').val();
+    
+    var attestation_type = "";
+    var authenticator_attachment = "";
 
-    var user_verification = $('#select-verification').find(':selected').val();
-    var resident_key_requirement = $('#select-residency').find(':selected').val();
-    var txAuthSimple_extension = $('#extension-input').val();
+    var user_verification = "";
+    var resident_key_requirement = "";
+    var txAuthSimple_extension = "";
+    
     checkUserExists().then(function() {
         fetch('/makeCredential/' + state.user.name, { 
             method: "POST",

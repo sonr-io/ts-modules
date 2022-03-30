@@ -8,6 +8,23 @@ export function createCredentials(publicKey: any): Promise<void | Credential> {
     });
 }
 
+export function createAssertion(assertedCredential: any, encodeCredentials: any): any {
+    if (!assertedCredential || !encodeCredentials)
+        return {};
+
+    return {
+        id: assertedCredential.id,
+        rawId: bufferEncode(encodeCredentials.rawId),
+        type: assertedCredential.type,
+        response: {
+            authenticatorData: bufferEncode(encodeCredentials.authData),
+            clientDataJSON: bufferEncode(encodeCredentials.clientDataJSON),
+            signature: bufferEncode(encodeCredentials.sig),
+            userHandle: bufferEncode(encodeCredentials.userHandle),
+        },
+    };
+}
+
 export function detectWebAuthnSupport(): BrowserSupport {
     if (window.PublicKeyCredential === undefined ||
         typeof window.PublicKeyCredential !== "function") {
@@ -24,6 +41,28 @@ export function detectWebAuthnSupport(): BrowserSupport {
     // Browser suppported and https enabled
     return BrowserSupport.Supported;
 }
+
+export function encodeCredentialsForAssertion(assertedCredential: any): any {
+    try 
+    {
+        let authData = new Uint8Array(assertedCredential.authenticatorData);
+        let clientDataJSON = new Uint8Array(assertedCredential.clientDataJSON);
+        let rawId = new Uint8Array(assertedCredential.rawId);
+        let sig = new Uint8Array(assertedCredential.signature);
+        let userHandle = new Uint8Array(assertedCredential.response.userHandle);
+
+        return {
+            authData,
+            clientDataJSON,
+            rawId,
+            sig,
+            userHandle
+        };
+    } catch (e) {
+        console.error(`Error while encoding credential assertion: ${e.message}`);
+    }
+}
+
 
 export function getStorageKey(): string  { return storageKey; }
 
@@ -42,7 +81,6 @@ export function bufferEncode(value: Uint8Array): string {
 }
 
 // Don't drop any blanks
-// decode
 export function bufferDecode(value): Uint8Array {
     return Uint8Array.from(atob(value), c => c.charCodeAt(0));
 }

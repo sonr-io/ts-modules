@@ -1,0 +1,24 @@
+<DOCTYPE html>
+<html lang="en"> 
+    <head>
+        <title>Webauthn test bench</title>
+        <script src="./dist/bundle.js"></script>
+    </head>
+    <body>
+        <h3>.snr registration authnetication test bench</h3>
+        <form id="test-form" novalidate>
+            <input type="text" id="input-snr-name"/>
+            <button> Authenticate </button>
+        </form>
+
+        <script>
+            const form = document.getElementById('test-form');
+            form && form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                startRegistration({
+                    name: document.getElementById('input-snr-name').textContent;
+                });
+            });
+        </script>
+    </body>
+</html>

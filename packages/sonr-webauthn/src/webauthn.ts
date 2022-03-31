@@ -1,6 +1,6 @@
 import { assertionEndpoint, makeCredentialsEndpoint } from "./constants";
 import { CreateSessionState, GetSessionState } from "./state";
-import { bufferDecode, bufferEncode, createAssertion, encodeCredentials, encodeCredentialsForAssertion } from "./utils";
+import { bufferDecode, bufferEncode, createAssertion, encodeCredentialsForAssertion } from "./utils";
 
 CreateSessionState();
 const state: any = GetSessionState();
@@ -24,7 +24,7 @@ export function checkUserExists(): Promise<boolean> {
     });
 }
 
-export function getCredentials(state: any): Promise<object> {
+export function getCredentials(): Promise<object> {
     return new Promise<object>((resolve, reject) => {
         try {
             fetch('/credential/' + state.user.name).then(function(response) {
@@ -41,36 +41,33 @@ export function getCredentials(state: any): Promise<object> {
     });
 }
 
-export function makeCredential(name: string): Promise<void> {
-    return new Promise((resolve, reject) => {
+export function makeCredential(name: string): Promise<Credential> {
+    return new Promise<Credential>((resolve, reject) => {
         try {
             var credential = null;
             
-            checkUserExists().then(function(resp: boolean) {
-                if (!resp)
-                    reject();
-                fetch(makeCredentialsEndpoint + '/' + state.user.name, { 
-                    method: "POST",
-                    body: JSON.stringify({
-                            attType: "",
-                            authType: "",
-                            userVerification: "",
-                            residentKeyRequirement: "",
-                            txAuthExtension: "",
-                        })
-                    }).then((makeCredentialOptions: any) => {
-                        makeCredentialOptions.publicKey.challenge = bufferDecode(makeCredentialOptions.publicKey.challenge);
-                        makeCredentialOptions.publicKey.user.id = bufferDecode(makeCredentialOptions.publicKey.user.id);
-                        if (makeCredentialOptions.publicKey.excludeCredentials) {
-                            for (var i = 0; i < makeCredentialOptions.publicKey.excludeCredentials.length; i++) {
-                                makeCredentialOptions.publicKey.excludeCredentials[i].id = bufferDecode(makeCredentialOptions.publicKey.excludeCredentials[i].id);
-                            }
+            fetch(makeCredentialsEndpoint + '/' + state.user.name, { 
+                method: "POST",
+                body: JSON.stringify({
+                        attType: "",
+                        authType: "",
+                        userVerification: "",
+                        residentKeyRequirement: "",
+                        txAuthExtension: "",
+                    })
+                }).then((makeCredentialOptions: any) => {
+                    makeCredentialOptions.publicKey.challenge = bufferDecode(makeCredentialOptions.publicKey.challenge);
+                    makeCredentialOptions.publicKey.user.id = bufferDecode(makeCredentialOptions.publicKey.user.id);
+                    if (makeCredentialOptions.publicKey.excludeCredentials) {
+                        for (var i = 0; i < makeCredentialOptions.publicKey.excludeCredentials.length; i++) {
+                            makeCredentialOptions.publicKey.excludeCredentials[i].id = bufferDecode(makeCredentialOptions.publicKey.excludeCredentials[i].id);
                         }
-                        console.log(`Credential Creation Options: ${makeCredentialOptions}`);
-                    }).catch(() => {
-                        reject();
-                    });
-            });
+                    }
+                    console.log(`Credential Creation Options: ${makeCredentialOptions}`);
+                    resolve(makeCredentialOptions.publicKey);
+                }).catch(() => {
+                    reject();
+                });
         } catch (e)
         {
             console.error(`Error while making user credentials: ${e.message}`); // what to do if the server returns resp code?
@@ -137,7 +134,7 @@ export function verifyAssertion(assertedCredential): Promise<boolean> {
 
         fetch(assertionEndpoint, {
             method: 'POST',
-            body: JSON.stringify(payload);
+            body: JSON.stringify(payload)
         }).then(() => {
             resolve(true);
         }).catch(() => {

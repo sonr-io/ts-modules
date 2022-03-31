@@ -1,3 +1,7 @@
+/* 
+    Currently keeping session state in memory
+    Should probably switch to using sessionStorage
+*/
 export type User = {
     name: string,
     displayName: string

@@ -1,1 +1,1 @@
-export * from './webauthn';
+export * from './register';

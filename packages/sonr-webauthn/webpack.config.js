@@ -2,6 +2,7 @@ const path = require('path');
 
 module.exports = {
   entry: './src/index.ts',
+  target: 'web',
   module: {
     rules: [
       {
@@ -16,6 +17,7 @@ module.exports = {
   },
   output: {
     filename: 'bundle.js',
+    libraryTarget: 'umd',
     path: path.resolve(__dirname, 'dist'),
   },
 };

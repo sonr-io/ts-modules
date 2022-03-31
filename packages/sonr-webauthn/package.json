@@ -9,8 +9,10 @@
     "access": "public"
   },
   "scripts": {
+    "bundle": "webpack --config webpack.config.js",
     "tsc": "tsc",
-    "bundle": "webpack --config webpack.config.js"
+    "tsc:dev-server": "tsc -p ./mocks/tsconfig.json",
+    "start:dev-server": "node mocks/lib/server.js"
   },
   "keywords": [
     "webauthn",
@@ -22,6 +24,13 @@
     "base64-js": "1.5.1"
   },
   "devDependencies": {
+    "@simplewebauthn/server": "^4.4.0",
+    "@types/express": "^4.17.13",
+    "express": "^4.17.3",
+    "express-handlebars": "^6.0.3",
+    "express-session": "^1.17.2",
+    "express-useragent": "^1.0.15",
+    "helmet": "^5.0.2",
     "ts-loader": "^9.2.8",
     "webpack": "^5.70.0",
     "webpack-cli": "^4.9.2"

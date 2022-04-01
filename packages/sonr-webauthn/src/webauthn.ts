@@ -98,9 +98,10 @@ export function getAssertion(
     return new Promise((resolve, reject) => {
         try {
             const verificationObject: any = createAssertion(credential);
+            const serializedCred: string = JSON.stringify(verificationObject);
             verificationObject && fetch(assertionEndpoint + '/' + state.user.name, {
                 method: 'POST',
-                body: JSON.stringify(verificationObject),
+                body: serializedCred,
             }).then(async function(response: Response) {
                 const reqBody: string = await response.text();
                 const makeAssertionOptions: any = JSON.parse(reqBody);

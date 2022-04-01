@@ -10,7 +10,7 @@
   },
   "scripts": {
     "bundle": "rimraf bin/ && webpack --config webpack.config.js",
-    "tsc": "rimraf lib/ && tsc",
+    "tsc": "rimraf lib/ && tsc"
   },
   "keywords": [
     "webauthn",

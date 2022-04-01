@@ -8,19 +8,17 @@ export function createCredentials(publicKey: any): Promise<void | Credential> {
     });
 }
 
-export function createAssertion(assertedCredential: any, encodeCredentials: any): any {
-    if (!assertedCredential || !encodeCredentials)
+export function createAssertion(credential: PublicKeyCredential): any {
+    if (!credential)
         return {};
 
     return {
-        id: assertedCredential.id,
-        rawId: bufferEncode(encodeCredentials.rawId),
-        type: assertedCredential.type,
+        id: credential.id,
+        rawId: bufferEncode(credential.rawId as Uint8Array),
+        type: credential.type,
         response: {
-            authenticatorData: bufferEncode(encodeCredentials.authData),
-            clientDataJSON: bufferEncode(encodeCredentials.clientDataJSON),
-            signature: bufferEncode(encodeCredentials.sig),
-            userHandle: bufferEncode(encodeCredentials.userHandle),
+            authenticatorData: bufferEncode((credential.response as any).attestationObject),
+            clientDataJSON: bufferEncode((credential as any).clientDataJSON),
         },
     };
 }

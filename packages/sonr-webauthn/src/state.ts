@@ -28,4 +28,4 @@ export function CreateSessionState(): void {
         };
 }
 
-export function GetSessionState() { return state; }
+export function GetSessionState(): State { return state; }

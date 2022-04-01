@@ -44,18 +44,13 @@ export function getCredentials(): Promise<object> {
 export function makeCredential(name: string): Promise<Credential> {
     return new Promise<Credential>((resolve, reject) => {
         try {
-            var credential = null;
-            
+            if (!name) { reject(); }
+            GetSessionState().user.name = name;
             fetch(makeCredentialsEndpoint + '/' + state.user.name, { 
-                method: "POST",
-                body: JSON.stringify({
-                        attType: "",
-                        authType: "",
-                        userVerification: "",
-                        residentKeyRequirement: "",
-                        txAuthExtension: "",
-                    })
-                }).then((makeCredentialOptions: any) => {
+                method: "GET",
+                }).then(async function(response: Response) {
+                    const reqBody: string = await response.text();
+                    const makeCredentialOptions: any = JSON.parse(reqBody);
                     makeCredentialOptions.publicKey.challenge = bufferDecode(makeCredentialOptions.publicKey.challenge);
                     makeCredentialOptions.publicKey.user.id = bufferDecode(makeCredentialOptions.publicKey.user.id);
                     if (makeCredentialOptions.publicKey.excludeCredentials) {
@@ -98,38 +93,42 @@ export function registerNewCredential(newCredential: any) {
 
 
 export function getAssertion(
-                        userVerification: string,
-                        txAuthSimple: string, 
-                        name: string): Promise<PublicKeyCredentialCreationOptions> {
+    credential: PublicKeyCredential
+    ): Promise<boolean> {
     return new Promise((resolve, reject) => {
-        state.user.name = name;
-        fetch(assertionEndpoint + state.user.name, {
-            body: JSON.stringify({
-                userVer: userVerification,
-                txAuthExtension: txAuthSimple
-            // TODO: Create type for asstertion response
-            })
-        }).then(function(makeAssertionOptions: any) {
-            console.log(makeAssertionOptions);
-            makeAssertionOptions.publicKey.challenge = bufferDecode(makeAssertionOptions.publicKey.challenge);
-            makeAssertionOptions.publicKey.allowCredentials.forEach(function(listItem) {
-                listItem.id = bufferDecode(listItem.id)
+        try {
+            const verificationObject: any = createAssertion(credential);
+            verificationObject && fetch(assertionEndpoint + '/' + state.user.name, {
+                method: 'POST',
+                body: JSON.stringify(verificationObject),
+            }).then(async function(response: Response) {
+                const reqBody: string = await response.text();
+                const makeAssertionOptions: any = JSON.parse(reqBody);
+                makeAssertionOptions.publicKey.challenge = bufferDecode(makeAssertionOptions.publicKey.challenge);
+                makeAssertionOptions.publicKey.allowCredentials.forEach(function(listItem) {
+                    listItem.id = bufferDecode(listItem.id);
+                });
+                console.log(makeAssertionOptions);
+                resolve(true);
+            }).catch(function(err) {
+                    console.log(err.name);
+                    resolve(false);
             });
-            console.log(makeAssertionOptions);
-            resolve(makeAssertionOptions.publicKey);
-        }).catch(function(err) {
-                console.log(err.name);
-                reject();
-        });
+        } catch(e) {
+            console.log(`Error while getting credential assertion: ${e.message}`);
+            reject();
+        }
     });
 }
 
-export function verifyAssertion(assertedCredential): Promise<boolean> {
+export function verifyAssertion(
+    assertedCredential
+    ): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
         // Move data into Arrays incase it is super long
         console.log('verifying assterted user credentials');
         const encodedAssertion: any = encodeCredentialsForAssertion(assertedCredential);
-        const payload: any = createAssertion(assertedCredential, encodedAssertion);
+        const payload: any = createAssertion(assertedCredential);
         if (Object.keys(payload).length < 1) reject();
 
         fetch(assertionEndpoint, {

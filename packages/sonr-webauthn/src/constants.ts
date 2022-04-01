@@ -1,3 +1,3 @@
 export const storageKey = 'sonr-username';
-export const makeCredentialsEndpoint = '/makeCredential';
-export const assertionEndpoint = '/assertion';
+export const makeCredentialsEndpoint = '/register/name/start';
+export const assertionEndpoint = '/register/name/finish';

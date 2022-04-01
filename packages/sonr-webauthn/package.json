@@ -9,10 +9,8 @@
     "access": "public"
   },
   "scripts": {
-    "bundle": "webpack --config webpack.config.js",
-    "tsc": "tsc",
-    "tsc:dev-server": "tsc -p ./mocks/tsconfig.json",
-    "start:dev-server": "node mocks/lib/server.js"
+    "bundle": "rimraf bin/ && webpack --config webpack.config.js",
+    "tsc": "rimraf lib/ && tsc",
   },
   "keywords": [
     "webauthn",

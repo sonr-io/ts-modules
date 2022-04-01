@@ -1,5 +1,5 @@
 {
-  "name": "@sonr/webauthn",
+  "name": "@sonr-io/webauthn",
   "version": "1.0.0",
   "description": "webauthn imeplentation for sonr highway node",
   "directories": {

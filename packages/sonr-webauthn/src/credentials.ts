@@ -4,36 +4,6 @@ import { detectWebAuthnSupport } from "./utils";
 /*
 
 */
-function createCredentialOptions(
-    serverContext: string, 
-    userName: string, 
-    displayName: string): PublicKeyCredentialCreationOptions {
-    return {
-        challenge: Uint8Array.from(
-            serverContext, c => c.charCodeAt(0)),
-        rp: {
-            name: "Duo Security",
-            id: "duosecurity.com",
-        },
-        user: {
-            id: Uint8Array.from(
-                "UZSL85T9AFC", c => c.charCodeAt(0)),
-            name: "lee@webauthn.guide",
-            displayName: "Lee",
-        },
-        // -7 indicates that the server accepts Elliptic Curve public keys using a SHA-256
-        pubKeyCredParams: [{alg: -7, type: "public-key"}],
-        authenticatorSelection: {
-            authenticatorAttachment: "cross-platform",
-        },
-        timeout: 60000,
-        attestation: "direct"
-    };    
-};
-
-/*
-
-*/
 export async function createCredentials(
     options: PublicKeyCredentialCreationOptions
     ): Promise<Credential | null> {

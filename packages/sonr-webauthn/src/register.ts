@@ -6,7 +6,7 @@ declare type RegistrationOptions = {
     crossOrigin: boolean,
 }
 
-export async function startRegistration(options: RegistrationOptions): Promise<void> {
+export async function startRegistration(options: RegistrationOptions): Promise<boolean> {
     if (!options)
         throw Error("No Configuration options provided, aborting");
     
@@ -17,11 +17,12 @@ export async function startRegistration(options: RegistrationOptions): Promise<v
             const newCredential: Credential | void = await createCredentials(credential);
             console.info(`Credentials created for ${options.name}`);
             console.log(JSON.stringify(newCredential));
-            await getAssertion(newCredential as PublicKeyCredential);
+            const result: boolean = await getAssertion(newCredential as PublicKeyCredential);
+            resolve(true);
             // const verification: boolean = await verifyAssertion(newCredential);
         } catch(e)
         {
-
+            resolve(false);
         }
     });
 }

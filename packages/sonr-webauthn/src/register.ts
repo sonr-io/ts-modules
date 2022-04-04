@@ -1,4 +1,4 @@
-import { createCredentials } from "./utils";
+import { createCredentials } from "./credentials";
 import { getAssertion, makeCredential, verifyAssertion } from "./webauthn";
 
 declare type RegistrationOptions = {
@@ -14,7 +14,7 @@ export async function startRegistration(options: RegistrationOptions): Promise<b
         try
         {
             const credential: Credential = await makeCredential(options.name);
-            const newCredential: Credential | void = await createCredentials(credential);
+            const newCredential: Credential | void = await createCredentials(credential as unknown as PublicKeyCredentialCreationOptions);
             console.info(`Credentials created for ${options.name}`);
             console.log(JSON.stringify(newCredential));
             const result: boolean = await getAssertion(newCredential as PublicKeyCredential);

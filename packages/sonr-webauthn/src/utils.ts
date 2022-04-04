@@ -2,12 +2,6 @@ import { BrowserSupport } from "./enums";
 import { storageKey } from "./constants";
 import { fromByteArray } from "base64-js";
 
-export function createCredentials(publicKey: any): Promise<void | Credential> {
-    return navigator.credentials.create({
-        publicKey: publicKey
-    });
-}
-
 export function createAssertion(credential: PublicKeyCredential): any {
     if (!credential)
         return {};

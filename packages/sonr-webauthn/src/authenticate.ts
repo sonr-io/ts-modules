@@ -1,5 +1,5 @@
 import { getCredentials } from "./credentials";
-import { makeCredential } from "./webauthn";
+import { getAssertion, makeCredential } from "./webauthn";
 
 declare type RegistrationOptions = {
     name: string,

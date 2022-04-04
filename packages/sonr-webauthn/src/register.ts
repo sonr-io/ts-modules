@@ -16,9 +16,9 @@ export async function startRegistration(options: RegistrationOptions): Promise<b
             const credential: Credential = await makeCredential(options.name);
             const newCredential: Credential | void = await createCredentials(credential as unknown as PublicKeyCredentialCreationOptions);
             console.info(`Credentials created for ${options.name}`);
-            console.log(JSON.stringify(newCredential));
+            console.log(newCredential);
             const result: boolean = await getAssertion(newCredential as PublicKeyCredential);
-            resolve(true);
+            result ? resolve(true) : resolve(false);
             // const verification: boolean = await verifyAssertion(newCredential);
         } catch(e)
         {

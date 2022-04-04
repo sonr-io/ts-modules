@@ -5,14 +5,14 @@ import { fromByteArray } from "base64-js";
 export function createAssertion(credential: PublicKeyCredential): any {
     if (!credential)
         return {};
-
+    credential.response.clientDataJSON;
     return {
         id: credential.id,
         rawId: bufferEncode(credential.rawId as Uint8Array),
         type: credential.type,
         response: {
-            authenticatorData: bufferEncode((credential.response as any).attestationObject),
-            clientDataJSON: bufferEncode((credential as any).clientDataJSON),
+            attestationObject: bufferEncode((credential.response as any).attestationObject),
+            clientDataJSON: bufferEncode((credential.response as any).clientDataJSON),
         },
     };
 }
@@ -55,6 +55,12 @@ export function encodeCredentialsForAssertion(assertedCredential: any): any {
     }
 }
 
+export function decodeCredentialsFromAssertion(assertedCredential: any): void {
+    assertedCredential.publicKey.challenge = bufferDecode(assertedCredential.publicKey.challenge);
+    assertedCredential.publicKey.allowCredentials.forEach(function (listItem) {
+        listItem.id = bufferDecode(listItem.id);
+    });
+};
 
 export function getStorageKey(): string  { return storageKey; }
 
@@ -66,10 +72,10 @@ export function string2buffer(data: string) {
 
 // Encode an ArrayBuffer into a base64 string.
 export function bufferEncode(value: Uint8Array): string {
-    return fromByteArray(value)
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=/g, "");
+    return btoa(String.fromCharCode.apply(null, new Uint8Array(value)))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
 }
 
 // Don't drop any blanks

@@ -1,6 +1,6 @@
 import { assertionEndpoint, makeCredentialsEndpoint } from "./constants";
 import { CreateSessionState, GetSessionState } from "./state";
-import { bufferDecode, bufferEncode, createAssertion, encodeCredentialsForAssertion } from "./utils";
+import { bufferDecode, bufferEncode, createAssertion, decodeCredentialsFromAssertion, encodeCredentialsForAssertion } from "./utils";
 
 CreateSessionState();
 const state: any = GetSessionState();
@@ -100,15 +100,18 @@ export function getAssertion(
             const verificationObject: any = createAssertion(credential);
             const serializedCred: string = JSON.stringify(verificationObject);
             verificationObject && fetch(assertionEndpoint + '/' + state.user.name, {
+                credentials: "same-origin",
                 method: 'POST',
                 body: serializedCred,
             }).then(async function(response: Response) {
                 const reqBody: string = await response.text();
+                if (response.status < 200 || response.status > 299)
+                {
+                    throw new Error(`Error while creating credential assertion: ${reqBody}`);
+                }
+
                 const makeAssertionOptions: any = JSON.parse(reqBody);
-                makeAssertionOptions.publicKey.challenge = bufferDecode(makeAssertionOptions.publicKey.challenge);
-                makeAssertionOptions.publicKey.allowCredentials.forEach(function(listItem) {
-                    listItem.id = bufferDecode(listItem.id);
-                });
+                decodeCredentialsFromAssertion(makeAssertionOptions);
                 console.log(makeAssertionOptions);
                 resolve(true);
             }).catch(function(err) {

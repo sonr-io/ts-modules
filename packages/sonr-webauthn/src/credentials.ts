@@ -10,7 +10,8 @@ export async function createCredentials(
     try
     {
         const browserSupport: BrowserSupport = detectWebAuthnSupport();
-        if (browserSupport == BrowserSupport.NonHttps || BrowserSupport.Unsupported)
+        if (browserSupport == BrowserSupport.NonHttps 
+            || browserSupport == BrowserSupport.Unsupported)
             throw new Error("Browser does not support credentials");
         
         const cred: Credential = await navigator.credentials.create({

@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "Sonr typescript package mono repo",
   "scripts": {
-    "bootstrap": "lerna run bootstrap"
+    "bootstrap": "lerna run bootstrap",
+    "build": "lerna run tsc",
+    "bundle": "lerna run bundle",
+    "lint": "lerna run lint"
   },
   "repository": {
     "type": "git",
@@ -17,7 +20,9 @@
   "homepage": "https://github.com/sonr-io/TypeScript-Modules#readme",
   "devDependencies": {
     "@types/node": "^17.0.23",
+    "babel-eslint": "^10.1.0",
     "dotenv": "^16.0.0",
+    "eslint": "^8.12.0",
     "lerna": "^4.0.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.6.3"

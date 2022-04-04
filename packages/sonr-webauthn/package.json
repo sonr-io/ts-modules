@@ -1,9 +1,9 @@
 {
   "name": "@sonr-io/webauthn",
   "version": "1.0.0",
-  "description": "webauthn imeplentation for sonr highway node",
+  "description": "webauthn imeplentation for sonr highway-sdk",
   "directories": {
-    "lib": "lib"
+    "bin": "dist"
   },
   "publishConfig": {
     "access": "public"

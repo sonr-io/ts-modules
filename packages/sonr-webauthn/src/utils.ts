@@ -2,6 +2,8 @@ import { BrowserSupport } from "./enums";
 import { storageKey } from "./constants";
 import { fromByteArray } from "base64-js";
 
+export function getStorageKey(): string  { return storageKey; }
+
 export function createAssertion(credential: PublicKeyCredential): any {
     if (!credential)
         return {};
@@ -52,6 +54,7 @@ export function encodeCredentialsForAssertion(assertedCredential: any): any {
         };
     } catch (e) {
         console.error(`Error while encoding credential assertion: ${e.message}`);
+        
     }
 }
 
@@ -62,20 +65,24 @@ export function decodeCredentialsFromAssertion(assertedCredential: any): void {
     });
 };
 
-export function getStorageKey(): string  { return storageKey; }
-
 export function string2buffer(data: string) {
     return (new Uint8Array(data.length)).map(function(x, i) {
         return data.charCodeAt(i);
     });
 }
 
-// Encode an ArrayBuffer into a base64 string.
+/*
+* Encode an ArrayBuffer into a base64 string.
+*/
 export function bufferEncode(value: Uint8Array): string {
-    return btoa(String.fromCharCode.apply(null, new Uint8Array(value)))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=/g, "");
+    try 
+    {
+        const base65Str: string = atob(String.fromCharCode.apply(null, new Uint8Array(value)));
+
+        return base65Str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+    } catch(e) {
+        console.log(`Error while encoding key credentials: ${e.message}`);
+    }
 }
 
 // Don't drop any blanks

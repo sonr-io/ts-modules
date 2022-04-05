@@ -1,3 +1,5 @@
+import { storageKey } from "./constants";
+
 /* 
     Currently keeping session state in memory
     Should probably switch to using sessionStorage
@@ -8,24 +10,29 @@ export type User = {
 };
 
 export type State = {
-    createResponse: any,
-    publicKeyCredential: any,
-    credential: any,
     user: User
 };
 
-let state: any = undefined;
 export function CreateSessionState(): void {
-    if (!state)
-        state = {
-            createResponse: null,
-            publicKeyCredential: null,
-            credential: null,
+    if (!sState) {
+        sState = {
             user: {
                 name: "testuser@example.com",
                 displayName: "testuser",
             },
         };
+
+        var sState = JSON.stringify(sState);
+        sessionStorage && sessionStorage.setItem(storageKey, sState);
+    }
 }
 
-export function GetSessionState(): State { return state; }
+export function GetSessionState(): State {
+    const sessionState: string = sessionStorage?.getItem(storageKey) || "{}";
+    return JSON.parse(sessionStorage.getItem(storageKey)) as State;
+}
+
+export function setSessionState(sessionState: State): void {
+    const serializedState: string = JSON.stringify(sessionState);
+    sessionStorage && sessionStorage.setItem(storageKey, serializedState);
+}

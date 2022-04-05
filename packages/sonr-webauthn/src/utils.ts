@@ -7,7 +7,7 @@ export function getStorageKey(): string  { return storageKey; }
 export function createAssertion(credential: PublicKeyCredential): any {
     if (!credential)
         return {};
-    credential.response.clientDataJSON;
+
     return {
         id: credential.id,
         rawId: bufferEncode(credential.rawId as Uint8Array),
@@ -71,14 +71,15 @@ export function string2buffer(data: string) {
     });
 }
 
-/*
-* Encode an ArrayBuffer into a base64 string.
+/**
+ * Transforms an ArrayBuffer to base64 string
+* @param value arraybuffer to be transformed 
+* @returns string base64 encoded array value
 */
-export function bufferEncode(value: Uint8Array): string {
+export function bufferEncode(value: ArrayBuffer): string {
     try 
     {
-        const base65Str: string = atob(String.fromCharCode.apply(null, new Uint8Array(value)));
-
+        const base65Str: string = btoa(String.fromCharCode(...new Uint8Array(value)));
         return base65Str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
     } catch(e) {
         console.log(`Error while encoding key credentials: ${e.message}`);

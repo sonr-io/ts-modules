@@ -11,6 +11,7 @@
   "scripts": {
     "bundle:prod": "rimraf bin/ && webpack --env production --config webpack.config.js",
     "bundle:dev": "rimraf bin/ && webpack --env develop --config webpack.config.js",
+    "bundle": "rimraf bin/ && webpack --env production --config webpack.config.js",
     "tsc": "rimraf lib/ && tsc",
     "lint": "eslint src/**"
   },

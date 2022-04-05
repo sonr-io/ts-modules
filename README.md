@@ -3,7 +3,7 @@
 # Packages
 
 ```
-@sonr/webauthn
+@sonr/webauthn @0.0.1
 ```
 
 ### Project Structure
@@ -24,9 +24,10 @@ packages/
 We are using [lerna](https://github.com/lerna/lerna) for monorepo management. see documentation for information regarding their docs.
 ```
 - npm install (resolves root level packages)
--  npm bootstrap (resolves dependencies for projects within 'packages/').
+- npm run bootstrap (resolves dependencies for projects within 'packages/').
+- npm run tsc (transpiles typescript for each package)
+- npm run bundle (bundles packages for publishing)
 - npm publish (publishes all packages)
-
 ```
 
 # Development 

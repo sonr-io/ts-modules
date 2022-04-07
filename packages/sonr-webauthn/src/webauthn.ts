@@ -58,8 +58,8 @@ export function getCredentials(): Promise<object> {
 * @param name domain name to be used for credential creation
 * @returns Credential
 */
-export async function makeCredential(action: Action, name: string): Promise<Credential | undefined> {
-    const url: string = action === Action.Register ? makeCredentialsEndpoint : verifyAssertionEndpoint;
+export async function startRegistration(name: string): Promise<Credential | undefined> {
+    const url: string = makeCredentialsEndpoint;
     const sessionState: State = GetSessionState();
     sessionState.user.name = name;
     setSessionState(sessionState);
@@ -92,40 +92,55 @@ export async function makeCredential(action: Action, name: string): Promise<Cred
     }
 }
 
-
-/* 
-* This should be used to verify the auth data with the server
+/**
+* @throws Error  
+* @param action 
+* @param name domain name to be used for credential creation
+* @returns Credential
 */
-export function registerNewCredential(newCredential: any) {
-    // Move data into Arrays incase it is super long
-    let attestationObject = new Uint8Array(newCredential.response.attestationObject);
-    let clientDataJSON = new Uint8Array(newCredential.response.clientDataJSON);
-    let rawId = new Uint8Array(newCredential.rawId);
+export async function startLogin(name: string): Promise<Credential | undefined> {
+    const url: string = verifyAssertionEndpoint;
+    const sessionState: State = GetSessionState();
+    sessionState.user.name = name;
+    setSessionState(sessionState);
 
-    fetch(makeCredentialsEndpoint, {
-        method: 'POST',
-        body: JSON.stringify({
-            id: newCredential.id,
-            rawId: bufferEncode(rawId),
-            type: newCredential.type,
-            response: {
-                attestationObject: bufferEncode(attestationObject),
-                clientDataJSON: bufferEncode(clientDataJSON),
-            },
-        })
-    });
-};
+    try {
+        const response: Response | void = await fetch(url + '/' + sessionState.user.name, { method: "GET" });
+        if (!response || response == null) { 
+            return undefined;
+        }
+
+        const reqBody: string = await response?.text();
+        const makeCredentialOptions: any = JSON.parse(reqBody);
+        console.log(`Credential Creation Options: ${makeCredentialOptions}`);
+        if (makeCredentialOptions.publicKey)
+        {
+            makeCredentialOptions.publicKey.challenge = bufferDecode(makeCredentialOptions.publicKey.challenge);
+            makeCredentialOptions.publicKey.user.id = bufferDecode(makeCredentialOptions.publicKey.user.id);
+        }
+
+        if (makeCredentialOptions.publicKey.excludeCredentials) {
+            for (var i = 0; i < makeCredentialOptions.publicKey.excludeCredentials.length; i++) {
+                makeCredentialOptions.publicKey.excludeCredentials[i].id = bufferDecode(makeCredentialOptions.publicKey.excludeCredentials[i].id);
+            }
+        }
+        return makeCredentialOptions.publicKey;
+    } catch (e)
+    {
+        console.error(`Error while making user credentials: ${e.message}`);
+        throw e;
+    }
+}
 
 /*
 *
 */
-export function getAssertion(
-    action: Action,
+export function finishRegistration(
     credential: PublicKeyCredential
     ): Promise<boolean> {
     return new Promise((resolve, reject) => {
         try {
-            const url: string = action === Action.Register ? assertionEndpoint : authenticateUserEndpoint;
+            const url: string = assertionEndpoint;
             const sessionState: State = GetSessionState();
             const verificationObject: any = createAssertion(credential);
             const serializedCred: string = JSON.stringify(verificationObject);
@@ -156,6 +171,66 @@ export function getAssertion(
         }
     });
 }
+
+export function finishLogin(
+    credential: PublicKeyCredential
+    ): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+        try {
+            const url: string = authenticateUserEndpoint;
+            const sessionState: State = GetSessionState();
+            const verificationObject: any = createAssertion(credential);
+            const serializedCred: string = JSON.stringify(verificationObject);
+            verificationObject && fetch(url + '/' + sessionState.user.name, {
+                credentials: "same-origin",
+                method: 'POST',
+                body: serializedCred,
+            }).then(async function(response: Response) {
+                const reqBody: string = await response.text();
+
+                if (response.status < 200 || response.status > 299)
+                {
+                    throw new Error(`Error while creating credential assertion: ${reqBody}`);
+                }
+
+                const makeAssertionOptions: any = JSON.parse(reqBody);
+                decodeCredentialsFromAssertion(makeAssertionOptions);
+
+                console.log(makeAssertionOptions);
+                resolve(true);
+            }).catch(function(err) {
+                console.log(err.name);
+                resolve(false);
+            });
+        } catch(e) {
+            console.log(`Error while getting credential assertion: ${e.message}`);
+            reject();
+        }
+    });
+}
+
+/* 
+* This should be used to verify the auth data with the server
+*/
+export function registerNewCredential(newCredential: any) {
+    // Move data into Arrays incase it is super long
+    let attestationObject = new Uint8Array(newCredential.response.attestationObject);
+    let clientDataJSON = new Uint8Array(newCredential.response.clientDataJSON);
+    let rawId = new Uint8Array(newCredential.rawId);
+
+    fetch(makeCredentialsEndpoint, {
+        method: 'POST',
+        body: JSON.stringify({
+            id: newCredential.id,
+            rawId: bufferEncode(rawId),
+            type: newCredential.type,
+            response: {
+                attestationObject: bufferEncode(attestationObject),
+                clientDataJSON: bufferEncode(clientDataJSON),
+            },
+        })
+    });
+};
 
 /*
 * 

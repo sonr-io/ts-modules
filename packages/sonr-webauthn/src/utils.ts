@@ -73,12 +73,12 @@ export function encodeCredentialsForAssertion(assertedCredential: any): any {
  * @param assertedCredential  key credentials
  * @returns status (bool)
  */
-export function decodeCredentialsFromAssertion(assertedCredential: any): bool {
+export function decodeCredentialsFromAssertion(assertedCredential: any): boolean {
 
     if(assertedCredential.publicKey)
     {
         assertedCredential.publicKey.challenge = bufferDecode(assertedCredential.publicKey.challenge);
-        assertedCredential.publicKey.allowCredentials.forEach(function (listItem: ) {
+        assertedCredential.publicKey.allowCredentials.forEach(function (listItem) {
             listItem.id = bufferDecode(listItem.id);
         });
 

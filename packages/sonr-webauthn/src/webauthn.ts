@@ -115,15 +115,9 @@ export async function startLogin(name: string): Promise<Credential | undefined> 
         console.log(`Credential Creation Options: ${makeCredentialOptions}`);
         if (makeCredentialOptions.publicKey)
         {
-            makeCredentialOptions.publicKey.challenge = bufferDecode(makeCredentialOptions.publicKey.challenge);
-            makeCredentialOptions.publicKey.user.id = bufferDecode(makeCredentialOptions.publicKey.user.id);
+            decodeCredentialsFromAssertion(makeCredentialOptions);
         }
 
-        if (makeCredentialOptions.publicKey.excludeCredentials) {
-            for (var i = 0; i < makeCredentialOptions.publicKey.excludeCredentials.length; i++) {
-                makeCredentialOptions.publicKey.excludeCredentials[i].id = bufferDecode(makeCredentialOptions.publicKey.excludeCredentials[i].id);
-            }
-        }
         return makeCredentialOptions.publicKey;
     } catch (e)
     {
@@ -181,7 +175,7 @@ export function finishLogin(
             const sessionState: State = GetSessionState();
             const verificationObject: any = createAssertion(credential);
             const serializedCred: string = JSON.stringify(verificationObject);
-            verificationObject && fetch(url + '/' + sessionState.user.name, {
+            verificationObject && fetch(url + '/' + sessionState.user.name + '.snr', {
                 credentials: "same-origin",
                 method: 'POST',
                 body: serializedCred,

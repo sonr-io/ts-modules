@@ -1,12 +1,37 @@
 # Webauthn sonr authentication
-provided webauthn authentication implementations for the Sonr network.
-the following are endpoints relating to authentication mechanisms within the sonr network
 
+[Webauthn](https://webauthn.io/) implementation for the sonr highway node implemetnation. 
+ 
 ## Registration of user public key information for a sonr domain.
 ```
 /register/name/start
 /register/name/finish
 ```
+
+Public Key Credentials options 
+```
+const publicKeyCredentialCreationOptions = {
+    challenge: Uint8Array.from(
+        randomStringFromServer, c => c.charCodeAt(0)),
+    rp: {
+        name: "Duo Security",
+        id: "duosecurity.com",
+    },
+    user: {
+        id: Uint8Array.from(
+            "UZSL85T9AFC", c => c.charCodeAt(0)),
+        name: "lee@webauthn.guide",
+        displayName: "Lee",
+    },
+    pubKeyCredParams: [{alg: -7, type: "public-key"}],
+    authenticatorSelection: {
+        authenticatorAttachment: "cross-platform",
+    },
+    timeout: 60000,
+    attestation: "direct"
+};
+```
+currently supporting
 ## Authentication of user public key information for a sonr domain
 ```
 /access/name/start

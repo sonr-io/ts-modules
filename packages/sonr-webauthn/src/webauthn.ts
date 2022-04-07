@@ -53,8 +53,10 @@ export function getCredentials(): Promise<object> {
 }
 
 /**
+* @throws Error  
 * @param action 
-* @param name
+* @param name domain name to be used for credential creation
+* @returns Credential
 */
 export async function makeCredential(action: Action, name: string): Promise<Credential | undefined> {
     const url: string = action === Action.Register ? makeCredentialsEndpoint : verifyAssertionEndpoint;
@@ -71,8 +73,12 @@ export async function makeCredential(action: Action, name: string): Promise<Cred
         const reqBody: string = await response?.text();
         const makeCredentialOptions: any = JSON.parse(reqBody);
         console.log(`Credential Creation Options: ${makeCredentialOptions}`);
-        makeCredentialOptions.publicKey.challenge = bufferDecode(makeCredentialOptions.publicKey.challenge);
-        makeCredentialOptions.publicKey.user.id = bufferDecode(makeCredentialOptions.publicKey.user.id);
+        if (makeCredentialOptions.publicKey)
+        {
+            makeCredentialOptions.publicKey.challenge = bufferDecode(makeCredentialOptions.publicKey.challenge);
+            makeCredentialOptions.publicKey.user.id = bufferDecode(makeCredentialOptions.publicKey.user.id);
+        }
+
         if (makeCredentialOptions.publicKey.excludeCredentials) {
             for (var i = 0; i < makeCredentialOptions.publicKey.excludeCredentials.length; i++) {
                 makeCredentialOptions.publicKey.excludeCredentials[i].id = bufferDecode(makeCredentialOptions.publicKey.excludeCredentials[i].id);
@@ -129,6 +135,7 @@ export function getAssertion(
                 body: serializedCred,
             }).then(async function(response: Response) {
                 const reqBody: string = await response.text();
+
                 if (response.status < 200 || response.status > 299)
                 {
                     throw new Error(`Error while creating credential assertion: ${reqBody}`);
@@ -136,11 +143,12 @@ export function getAssertion(
 
                 const makeAssertionOptions: any = JSON.parse(reqBody);
                 decodeCredentialsFromAssertion(makeAssertionOptions);
+
                 console.log(makeAssertionOptions);
                 resolve(true);
             }).catch(function(err) {
-                    console.log(err.name);
-                    resolve(false);
+                console.log(err.name);
+                resolve(false);
             });
         } catch(e) {
             console.log(`Error while getting credential assertion: ${e.message}`);

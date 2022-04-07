@@ -4,6 +4,9 @@ import { fromByteArray } from "base64-js";
 
 export function getStorageKey(): string  { return storageKey; }
 
+/**
+ * constructs public key credential for highway (server side)
+ */
 export function createAssertion(credential: PublicKeyCredential): any {
     if (!credential)
         return {};
@@ -19,6 +22,10 @@ export function createAssertion(credential: PublicKeyCredential): any {
     };
 }
 
+/**
+ * 
+ * @returns BrowserSupport Support status indicating compatibility for webauthn
+ */
 export function detectWebAuthnSupport(): BrowserSupport {
     if (window.PublicKeyCredential === undefined ||
         typeof window.PublicKeyCredential !== "function") {
@@ -36,6 +43,9 @@ export function detectWebAuthnSupport(): BrowserSupport {
     return BrowserSupport.Supported;
 }
 
+/**
+ * creates encoded buffers for public key exchange options. 
+*/
 export function encodeCredentialsForAssertion(assertedCredential: any): any {
     try 
     {
@@ -58,11 +68,24 @@ export function encodeCredentialsForAssertion(assertedCredential: any): any {
     }
 }
 
-export function decodeCredentialsFromAssertion(assertedCredential: any): void {
-    assertedCredential.publicKey.challenge = bufferDecode(assertedCredential.publicKey.challenge);
-    assertedCredential.publicKey.allowCredentials.forEach(function (listItem) {
-        listItem.id = bufferDecode(listItem.id);
-    });
+/**
+ * Decodes ArrayBuffer to Uint8Array
+ * @param assertedCredential  key credentials
+ * @returns status (bool)
+ */
+export function decodeCredentialsFromAssertion(assertedCredential: any): bool {
+
+    if(assertedCredential.publicKey)
+    {
+        assertedCredential.publicKey.challenge = bufferDecode(assertedCredential.publicKey.challenge);
+        assertedCredential.publicKey.allowCredentials.forEach(function (listItem: ) {
+            listItem.id = bufferDecode(listItem.id);
+        });
+
+        return true;
+    }
+
+    return false;
 };
 
 export function string2buffer(data: string) {

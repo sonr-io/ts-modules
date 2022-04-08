@@ -16,7 +16,7 @@ module.exports = (env) => {
           'amd': 'react-dom'
       }
     },
-    target: 'web',
+    target: 'es6',
     mode: isProd ? 'production' : 'development',
     module: {
       rules: [
@@ -31,9 +31,10 @@ module.exports = (env) => {
       extensions: ['.tsx', '.ts', '.js'],
     },
     output: {
-      filename: 'bundle.js',
+      chunkFilename: '[name].js',
+      chunkFormat: 'module',
       libraryTarget: 'umd',
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(__dirname, 'dist')
     }
   }
 }

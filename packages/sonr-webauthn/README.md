@@ -20,18 +20,18 @@ const publicKeyCredentialCreationOptions = {
     user: {
         id: Uint8Array.from(
             "UZSL85T9AFC", c => c.charCodeAt(0)),
-        name: "lee@webauthn.guide",
+        name: "lee@webauthn.example",
         displayName: "Lee",
     },
     pubKeyCredParams: [{alg: -7, type: "public-key"}],
     authenticatorSelection: {
-        authenticatorAttachment: "cross-platform",
+        authenticatorAttachment: "platform",
     },
     timeout: 60000,
     attestation: "direct"
 };
 ```
-currently supporting
+
 ## Authentication of user public key information for a sonr domain
 ```
 /access/name/start

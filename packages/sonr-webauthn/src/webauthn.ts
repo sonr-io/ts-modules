@@ -1,5 +1,4 @@
 import { assertionEndpoint, authenticateUserEndpoint, makeCredentialsEndpoint, verifyAssertionEndpoint } from "./constants";
-import { Action } from "./enums";
 import { GetSessionState, setSessionState, State } from "./state";
 import { 
     bufferDecode,
@@ -8,8 +7,9 @@ import {
     decodeCredentialsFromAssertion,
     encodeCredentialsForAssertion } from "./utils";
 
-/*
-
+/**
+    check if a given user is present in the Sonr registry
+    @returns boolean indiciating user status within registry 
 */
 export function checkUserExists(): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
@@ -32,7 +32,8 @@ export function checkUserExists(): Promise<boolean> {
 }
 
 /**
-*
+* Retrieves authentication Credentials from authentication server
+* @returns PublicKeyCredentialOptions
 */
 export function getCredentials(): Promise<object> {
     return new Promise<object>((resolve, reject) => {
@@ -127,7 +128,8 @@ export async function startLogin(name: string): Promise<Credential | undefined> 
 }
 
 /*
-*
+* Finalizes user registration within the sonr registry.
+* Once presisted name is valid within sonr name registry
 */
 export function finishRegistration(
     credential: PublicKeyCredential
@@ -175,7 +177,7 @@ export function finishLogin(
             const sessionState: State = GetSessionState();
             const verificationObject: any = createAssertion(credential);
             const serializedCred: string = JSON.stringify(verificationObject);
-            verificationObject && fetch(url + '/' + sessionState.user.name + '.snr', {
+            verificationObject && fetch(url + '/' + sessionState.user.name, {
                 credentials: "same-origin",
                 method: 'POST',
                 body: serializedCred,

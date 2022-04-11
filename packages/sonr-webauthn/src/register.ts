@@ -1,17 +1,13 @@
 import { createCredentials } from "./credentials";
+import { ConfigurationOptions } from "./types/Options";
 import { startRegistration, finishRegistration} from "./webauthn";
-
-declare type RegistrationOptions = {
-    name: string,
-    crossOrigin: boolean,
-}
 
 /**
  * 
  * @param options configuration object for webAuthentication options
  * @returns boolean indicating status of registration operation
  */
-export async function startUserAuthentication(options: RegistrationOptions): Promise<boolean> {
+export async function startUserAuthentication(options: ConfigurationOptions): Promise<boolean> {
     if (!options)
         throw Error("No Configuration options provided, aborting");
 

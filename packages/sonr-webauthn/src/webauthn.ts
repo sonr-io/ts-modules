@@ -227,27 +227,3 @@ export function registerNewCredential(newCredential: any) {
         })
     });
 };
-
-/*
-* 
-*/
-export function verifyAssertion(
-    assertedCredential
-    ): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-        // Move data into Arrays incase it is super long
-        console.log('verifying assterted user credentials');
-        const encodedAssertion: any = encodeCredentialsForAssertion(assertedCredential);
-        const payload: any = createAssertion(assertedCredential);
-        if (Object.keys(payload).length < 1) reject();
-
-        fetch(assertionEndpoint, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        }).then(() => {
-            resolve(true);
-        }).catch(() => {
-            reject(false);
-        });
-    });
-}

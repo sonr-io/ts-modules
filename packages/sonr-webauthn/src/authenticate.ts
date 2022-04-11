@@ -1,4 +1,5 @@
 import { getCredentials } from "./credentials";
+import { ConfigurationOptions } from "./types/Options";
 import { startLogin, finishLogin } from "./webauthn";
 
 declare type RegistrationOptions = {
@@ -11,7 +12,7 @@ declare type RegistrationOptions = {
  * @param options configuration object for webAuthentication options
  * @returns boolean indicating status of authentication operation
  */
-export async function startUserLogin(options: RegistrationOptions): Promise<boolean> {
+export async function startUserLogin(options: ConfigurationOptions): Promise<boolean> {
     if (!options)
         throw Error("No Configuration options provided, aborting");
 

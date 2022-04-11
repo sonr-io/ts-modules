@@ -3,8 +3,3 @@ export enum BrowserSupport {
     Unsupported = 1,
     NonHttps = 2
 };
-
-export enum Action {
-    Register = 0,
-    Authenticate = 1,
-}

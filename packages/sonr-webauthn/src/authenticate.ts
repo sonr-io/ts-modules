@@ -2,11 +2,6 @@ import { getCredentials } from "./credentials";
 import { ConfigurationOptions } from "./types/Options";
 import { startLogin, finishLogin } from "./webauthn";
 
-declare type RegistrationOptions = {
-    name: string,
-    crossOrigin: boolean,
-};
-
 /**
  * 
  * @param options configuration object for webAuthentication options

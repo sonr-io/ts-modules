@@ -6,7 +6,10 @@
     "bootstrap": "lerna run bootstrap",
     "build": "lerna run tsc",
     "bundle": "lerna run bundle",
-    "lint": "lerna run lint"
+    "lint": "lerna run lint",
+    "publish:git": "lerna publish from-git",
+    "publish:package": "lerna publish from-package",
+    "publish:canary": "lerna publish --canary"
   },
   "repository": {
     "type": "git",

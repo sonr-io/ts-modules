@@ -1,6 +1,6 @@
 export declare type Result<T> = {
     error?: Error;
-    result: T;
+    result?: T;
     status: Status;
 };
 

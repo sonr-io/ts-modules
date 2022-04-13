@@ -15,6 +15,21 @@ export function createAssertion(credential: PublicKeyCredential): any {
         rawId: bufferEncode(credential.rawId as Uint8Array),
         type: credential.type,
         response: {
+            attestationObject: bufferEncode((credential.response as any).attestationObject),
+            clientDataJSON: bufferEncode((credential.response as any).clientDataJSON),
+        },
+    };
+}
+
+export function createAuthenicator(credential: PublicKeyCredential): any {
+    if (!credential)
+        return {};
+
+    return {
+        id: credential.id,
+        rawId: bufferEncode(credential.rawId as Uint8Array),
+        type: credential.type,
+        response: {
             authenticatorData: bufferEncode((credential.response as any).authenticatorData),
             //attestationObject: bufferEncode((credential.response as any).attestationObject),
             clientDataJSON: bufferEncode((credential.response as any).clientDataJSON),

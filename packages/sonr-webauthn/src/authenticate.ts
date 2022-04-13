@@ -1,4 +1,5 @@
 import { getCredentials } from "./credentials";
+import { Result } from "./types";
 import { ConfigurationOptions } from "./types/Options";
 import { startLogin, finishLogin } from "./webauthn";
 
@@ -18,7 +19,7 @@ export async function startUserLogin(options: ConfigurationOptions): Promise<boo
             const newCredential: Credential | void = await getCredentials(credential as unknown as PublicKeyCredentialCreationOptions);
             console.info(`Credentials created for ${options.name}`);
             console.log(JSON.stringify(newCredential));
-            const result: boolean = await finishLogin(newCredential as PublicKeyCredential);
+            const result: Result<PublicKeyCredential> = await finishLogin({ credential: newCredential as PublicKeyCredential });
             result ? resolve(true) : resolve(false);
         } catch(e)
         {

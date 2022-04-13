@@ -1,9 +1,13 @@
 import { assertionEndpoint, authenticateUserEndpoint, makeCredentialsEndpoint, verifyAssertionEndpoint } from "./constants";
 import { GetSessionState, setSessionState, State } from "./state";
+import {Result, Status} from './types/Result';
+import { ConfigurationOptions } from "./types/Options";
+
 import { 
     bufferDecode,
     bufferEncode,
     createAssertion,
+    createAuthenicator,
     decodeCredentialsFromAssertion,
     encodeCredentialsForAssertion } from "./utils";
 
@@ -169,13 +173,12 @@ export function finishRegistration(
 }
 
 export function finishLogin(
-    credential: PublicKeyCredential
-    ): Promise<boolean> {
+{ credential }: { credential: PublicKeyCredential; }    ): Promise<Result<PublicKeyCredential>> {
     return new Promise((resolve, reject) => {
         try {
             const url: string = authenticateUserEndpoint;
             const sessionState: State = GetSessionState();
-            const verificationObject: any = createAssertion(credential);
+            const verificationObject: any = createAuthenicator(credential);
             const serializedCred: string = JSON.stringify(verificationObject);
             verificationObject && fetch(url + '/' + sessionState.user.name, {
                 credentials: "same-origin",
@@ -193,10 +196,16 @@ export function finishLogin(
                 decodeCredentialsFromAssertion(makeAssertionOptions);
 
                 console.log(makeAssertionOptions);
-                resolve(true);
+                resolve({
+                    result: verificationObject,
+                    status: Status.success
+                });
             }).catch(function(err) {
                 console.log(err.name);
-                resolve(false);
+                resolve({
+                    error: err,
+                    status: Status.error
+                });
             });
         } catch(e) {
             console.log(`Error while getting credential assertion: ${e.message}`);
@@ -213,6 +222,14 @@ export function registerNewCredential(newCredential: any) {
     let attestationObject = new Uint8Array(newCredential.response.attestationObject);
     let clientDataJSON = new Uint8Array(newCredential.response.clientDataJSON);
     let rawId = new Uint8Array(newCredential.rawId);
+    
+    /*
+    let authData = assertion.response.authenticatorData;
+    let clientDataJSON = assertion.response.clientDataJSON;
+    let rawId = assertion.rawId;
+    let sig = assertion.response.signature;
+    let userHandle = assertion.response.userHandle;
+    */
 
     fetch(makeCredentialsEndpoint, {
         method: 'POST',

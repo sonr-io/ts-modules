@@ -3,7 +3,8 @@
 # Packages
 
 ```
-@sonr/webauthn @0.0.1
+@sonr/webauthn
+@sonr/validation
 ```
 
 ### Project Structure

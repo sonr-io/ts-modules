@@ -25,7 +25,8 @@
   "author": "sonr.io",
   "license": "GPLV2",
   "dependencies": {
-    "base64-js": "1.5.1"
+    "base64-js": "1.5.1",
+    "@sonr-io/validation": "0.0.1"
   },
   "devDependencies": {
     "@simplewebauthn/server": "^4.4.0",

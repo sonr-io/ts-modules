@@ -1,6 +1,5 @@
 import { BrowserSupport } from "./enums";
 import { storageKey } from "./constants";
-import { fromByteArray } from "base64-js";
 
 export function getStorageKey(): string  { return storageKey; }
 
@@ -16,8 +15,11 @@ export function createAssertion(credential: PublicKeyCredential): any {
         rawId: bufferEncode(credential.rawId as Uint8Array),
         type: credential.type,
         response: {
-            attestationObject: bufferEncode((credential.response as any).attestationObject),
+            authenticatorData: bufferEncode((credential.response as any).authenticatorData),
+            //attestationObject: bufferEncode((credential.response as any).attestationObject),
             clientDataJSON: bufferEncode((credential.response as any).clientDataJSON),
+            signature: bufferEncode((credential.response as any).signature),
+            userHandle: bufferEncode((credential.response as any).userHandle)
         },
     };
 }

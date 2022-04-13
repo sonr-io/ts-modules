@@ -1,16 +1,9 @@
 import { storageKey } from "./constants";
-
-/* 
-    Currently keeping session state in memory
-    Should probably switch to using sessionStorage
-*/
-export type User = {
-    name: string,
-    displayName: string
-};
+import { User } from "./types/User";
 
 export type State = {
-    user: User
+    user: User,
+    credentials?: PublicKeyCredential
 };
 
 export function CreateSessionState(): void {
@@ -20,6 +13,7 @@ export function CreateSessionState(): void {
                 name: "testuser@example.com",
                 displayName: "testuser",
             },
+            credentials: undefined
         };
 
         var sState = JSON.stringify(sState);

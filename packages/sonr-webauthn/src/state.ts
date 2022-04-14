@@ -1,17 +1,15 @@
 import { storageKey } from "./constants";
 import { User } from "./types/User";
+import { State } from './types/State';
 
-export type State = {
-    user: User,
-    credentials?: PublicKeyCredential
-};
-
+let sState: State | undefined = undefined;
 export function CreateSessionState(): void {
     if (!sState) {
         sState = {
             user: {
                 name: "testuser@example.com",
                 displayName: "testuser",
+                id: undefined,
             },
             credentials: undefined
         };

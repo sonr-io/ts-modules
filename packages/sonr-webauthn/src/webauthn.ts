@@ -1,7 +1,8 @@
 import { assertionEndpoint, authenticateUserEndpoint, makeCredentialsEndpoint, verifyAssertionEndpoint } from "./constants";
-import { GetSessionState, setSessionState, State } from "./state";
+import { GetSessionState, setSessionState } from "./state";
 import {Result, Status} from './types/Result';
 import { ConfigurationOptions } from "./types/Options";
+import {State} from './types/State';
 
 import { 
     bufferDecode,
@@ -106,9 +107,6 @@ export async function startRegistration(name: string): Promise<Credential | unde
 export async function startLogin(name: string): Promise<Credential | undefined> {
     const url: string = verifyAssertionEndpoint;
     const sessionState: State = GetSessionState();
-    sessionState.user.name = name;
-    setSessionState(sessionState);
-
     try {
         const response: Response | void = await fetch(url + '/' + sessionState.user.name, { method: "GET" });
         if (!response || response == null) { 

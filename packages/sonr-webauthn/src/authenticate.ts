@@ -33,7 +33,7 @@ export async function startUserLogin(options: ConfigurationOptions): Promise<boo
                 resolve(false);
         } catch(e)
         {
-            reject();
+            reject(e);
         }
     });
 }

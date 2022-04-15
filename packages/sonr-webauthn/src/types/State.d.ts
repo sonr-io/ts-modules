@@ -1,6 +1,6 @@
 import { User } from "./User";
 
-export declare type State = {
+export interface State {
     user: User,
     credentials?: PublicKeyCredential;
-};
+}

@@ -1,4 +1,4 @@
-export declare type Result<T> = {
+export interface Result<T> {
     error?: Error;
     result?: T;
     status: Status;

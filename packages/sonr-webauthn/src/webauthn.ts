@@ -135,7 +135,7 @@ export async function startLogin(name: string): Promise<Credential | undefined> 
 */
 export function finishRegistration(
     credential: PublicKeyCredential
-    ): Promise<boolean> {
+    ): Promise<Result<PublicKeyCredential>> {
     return new Promise((resolve, reject) => {
         try {
             const url: string = assertionEndpoint;
@@ -158,10 +158,13 @@ export function finishRegistration(
                 decodeCredentialsFromAssertion(makeAssertionOptions);
 
                 console.log(makeAssertionOptions);
-                resolve(true);
+                resolve({
+                    status: Status.success,
+                    
+                });
             }).catch(function(err) {
                 console.log(err.name);
-                resolve(false);
+                reject(err);
             });
         } catch(e) {
             console.log(`Error while getting credential assertion: ${e.message}`);

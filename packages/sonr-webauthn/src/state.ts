@@ -21,7 +21,7 @@ export function CreateSessionState(): void {
 
 export function GetSessionState(): State {
     const sessionState: string = sessionStorage?.getItem(storageKey) || "{}";
-    return JSON.parse(sessionStorage.getItem(storageKey)) as State;
+    return JSON.parse(sessionState) as State;
 }
 
 export function setSessionState(sessionState: State): void {

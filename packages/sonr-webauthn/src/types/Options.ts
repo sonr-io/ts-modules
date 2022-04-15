@@ -1,4 +1,4 @@
-export declare type ConfigurationOptions = {
+export interface ConfigurationOptions {
     name: string;
     crossOrigin: boolean;
     rpId: string;

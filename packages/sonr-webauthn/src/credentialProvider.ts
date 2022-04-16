@@ -1,4 +1,3 @@
-import { response } from "express";
 import { ConfigurationOptions } from "./types/Options";
 
 export class FetchProvider {

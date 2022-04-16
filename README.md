@@ -1,9 +1,11 @@
 # TypeScript Package Repository
+[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
 
 # Packages
 
 ```
-@sonr/webauthn @0.0.1
+@sonr/webauthn
+@sonr/validation
 ```
 
 ### Project Structure

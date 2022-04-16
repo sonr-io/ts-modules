@@ -1,25 +1,17 @@
 import { storageKey } from "./constants";
+import { User } from "./types/User";
+import { State } from './types/State';
 
-/* 
-    Currently keeping session state in memory
-    Should probably switch to using sessionStorage
-*/
-export type User = {
-    name: string,
-    displayName: string
-};
-
-export type State = {
-    user: User
-};
-
+let sState: State | undefined = undefined;
 export function CreateSessionState(): void {
     if (!sState) {
         sState = {
             user: {
                 name: "testuser@example.com",
                 displayName: "testuser",
+                id: undefined,
             },
+            credentials: undefined
         };
 
         var sState = JSON.stringify(sState);
@@ -29,7 +21,7 @@ export function CreateSessionState(): void {
 
 export function GetSessionState(): State {
     const sessionState: string = sessionStorage?.getItem(storageKey) || "{}";
-    return JSON.parse(sessionStorage.getItem(storageKey)) as State;
+    return JSON.parse(sessionState) as State;
 }
 
 export function setSessionState(sessionState: State): void {

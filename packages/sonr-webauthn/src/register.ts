@@ -5,7 +5,7 @@ import {GetSessionState, setSessionState} from './state';
 import {State} from './types/State';
 import { Result } from "./types/Result";
 import { rejects } from "assert";
-import { ValidateDisplayName, ValidateUserName } from "@sonr-io/validation";
+import { ValidateDisplayName, ValidateUserName } from "@sonr-io/validation/src/index";
 
 /**
  * 

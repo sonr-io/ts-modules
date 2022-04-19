@@ -12,7 +12,7 @@ import { ValidateDisplayName, ValidateUserName } from "@sonr-io/validation";
  * @param options configuration object for webAuthentication options
  * @returns boolean indicating status of registration operation
  */
-export async function startUserAuthentication(options: ConfigurationOptions): Promise<Result<PublicKeyCredential>> {
+export async function startUserRegistration(options: ConfigurationOptions): Promise<Result<PublicKeyCredential>> {
     if (!options)
         throw Error("No Configuration options provided, aborting");
 

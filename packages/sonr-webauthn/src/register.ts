@@ -1,7 +1,7 @@
 import { createCredentials } from "./credentials";
 import { ConfigurationOptions } from "./types/Options";
 import { startRegistration, finishRegistration} from "./webauthn";
-import {GetSessionState, setSessionState} from './state';
+import {CreateSessionState, GetSessionState, setSessionState} from './state';
 import {State} from './types/State';
 import { Result } from "./types/Result";
 import { rejects } from "assert";
@@ -18,7 +18,8 @@ export async function startUserRegistration(options: ConfigurationOptions): Prom
 
     try
     {
-        const sessionState: State = GetSessionState();
+        CreateSessionState();
+        let sessionState: State = GetSessionState();
         sessionState.user.name = ValidateUserName(options.name);
         sessionState.user.displayName = ValidateDisplayName(options.name);
 
@@ -35,7 +36,9 @@ export async function startUserRegistration(options: ConfigurationOptions): Prom
         const result: Result<PublicKeyCredential> = await finishRegistration(
             newCredential as PublicKeyCredential
         );
-
+        sessionState = GetSessionState();
+        sessionState.credentials = result.result;
+        setSessionState(sessionState);
         return result;
     } catch(e)
     {

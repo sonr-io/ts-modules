@@ -7,11 +7,12 @@ export function CreateSessionState(): void {
     if (!sState) {
         sState = {
             user: {
-                name: "testuser@example.com",
-                displayName: "testuser",
+                name: "",
+                displayName: "",
                 id: undefined,
             },
-            credentials: undefined
+            credentials: undefined,
+            whoIs: undefined
         };
 
         var sState = JSON.stringify(sState);

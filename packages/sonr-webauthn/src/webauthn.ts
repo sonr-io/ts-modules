@@ -156,7 +156,7 @@ export function finishRegistration(
 
                 const makeAssertionOptions: any = JSON.parse(reqBody);
                 decodeCredentialsFromAssertion(makeAssertionOptions);
-
+                
                 console.log(makeAssertionOptions);
                 resolve({
                     status: Status.success,

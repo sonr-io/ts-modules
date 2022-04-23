@@ -26,7 +26,7 @@ export async function startUserLogin(options: ConfigurationOptions): Promise<boo
             sessionState.user.displayName = ValidateDisplayName(options.name);
             setSessionState(sessionState);
 
-            const credential: Credential = await startLogin(options.name);
+            const credential: Credential = await startLogin();
             const newCredential: Credential | void = await getCredentials(credential as unknown as PublicKeyCredentialCreationOptions);
             console.info(`Credentials created for ${options.name}`);
             console.log(JSON.stringify(newCredential));

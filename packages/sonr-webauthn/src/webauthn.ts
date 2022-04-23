@@ -104,7 +104,7 @@ export async function startRegistration(name: string): Promise<Credential | unde
 * @param name domain name to be used for credential creation
 * @returns Credential
 */
-export async function startLogin(name: string): Promise<Credential | undefined> {
+export async function startLogin(): Promise<Credential | undefined> {
     const url: string = verifyAssertionEndpoint;
     const sessionState: State = GetSessionState();
     try {

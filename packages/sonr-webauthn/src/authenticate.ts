@@ -28,12 +28,16 @@ export async function startUserLogin(options: ConfigurationOptions): Promise<boo
 
             const credential: Credential = await startLogin();
             const newCredential: Credential | void = await getCredentials(credential as unknown as PublicKeyCredentialCreationOptions);
+            
             console.info(`Credentials created for ${options.name}`);
             console.log(JSON.stringify(newCredential));
+
             const result: Result<PublicKeyCredential> = await finishLogin({ credential: newCredential as PublicKeyCredential });
             sessionState = GetSessionState();
+            
             sessionState.credentials = result.result;
             setSessionState(sessionState);
+            
             if (result.status === Status.success)
                 resolve(true);
             else

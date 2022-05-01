@@ -21,6 +21,7 @@ export async function startUserLogin(options: ConfigurationOptions): Promise<boo
         try
         {
             CreateSessionState();
+            
             let sessionState: State = GetSessionState();
             sessionState.user.name = ValidateUserName(options.name);
             sessionState.user.displayName = ValidateDisplayName(options.name);

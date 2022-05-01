@@ -13,11 +13,14 @@
   "module": "dist/esm/index.js",
   "types": "lib/types/index.d.ts",
   "scripts": {
+    "coverage": "jest --collectCoverage --coverageProvider=babel --config ./../../jest.config.js",
+    "test": "jest --config ./../../jest.config.js",
     "bundle:prod": "rimraf dist/ && webpack --env production --config webpack.config.js",
     "bundle:dev": "rimraf dist/ && webpack --env develop --config webpack.config.js",
     "bundle": "rimraf dist/ && webpack --env production --config webpack.config.js",
     "tsc": "rimraf lib/ && tsc",
-    "lint": "eslint src/**"
+    "lint": "eslint src/**",
+    "prepack": "npm run test"
   },
   "keywords": [
     "webauthn",

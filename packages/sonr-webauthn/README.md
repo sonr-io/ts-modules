@@ -40,15 +40,18 @@ const publicKeyCredentialCreationOptions = {
 
 ## Usage
 ```
-startRegistration(/* options */); -> returns a status of true / false
+startRegistration(/* options */); -> returns a `Result` including status and public key credential
 ```
 
 ```
-startAuthentication(/* options */); -> returns a status of true / false
+startAuthentication(/* options */); -> returns a `Result` including status and public key credential
 ```
 
 # Development
 ```
+npm run coverage -> generates code coverage report
+npm run test -> runs unit tests without reporting coverage
+npm prepack -> runs tests without coverage
 npm run tsc (builds project typescript)
 npm run bundle:dev (bundles files for single file bundle distribution)
 npm run bundle:prod (bundles and minifies for production/publishing)

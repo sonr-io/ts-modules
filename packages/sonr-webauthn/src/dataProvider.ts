@@ -18,7 +18,7 @@ export class DataProvider {
 
     public getCredentialOptions(): Promise<PublicKeyCredentialCreationOptions> {
         return new Promise(async (resolve, reject) => {
-            if(this._config.useMocks)
+            if(DataProvider._config.useMocks)
                 return  {
                     challenge: Uint8Array.from(
                         "XSASDACVDVSDFSDF", c => c.charCodeAt(0)),

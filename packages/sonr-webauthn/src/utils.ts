@@ -61,7 +61,7 @@ export function detectWebAuthnSupport(): BrowserSupport {
 }
 
 /**
- * creates encoded buffers for public key exchange options. 
+ * Creates encoded buffers for public key exchange options. 
 */
 export function encodeCredentialsForAssertion(assertedCredential: any): any {
     try 

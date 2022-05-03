@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sonr-io/TypeScript-Modules.git"
+    "url": "git+https://github.com/sonr-io/ts-modules.git"
   },
   "author": "sonr",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/sonr-io/TypeScript-Modules/issues"
+    "url": "https://github.com/sonr-io/ts-modules/issues"
   },
-  "homepage": "https://github.com/sonr-io/TypeScript-Modules#readme",
+  "homepage": "https://github.com/sonr-io/ts-modules#readme",
   "devDependencies": {
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.23",

@@ -6,5 +6,5 @@ import { WhoIs } from "./WhoIs";
 export interface Session {
     ownerDid: string;
     whoIs: WhoIs;
-    credential: Credential;
+    credential: PublicKeyCredential;
 }

@@ -1,0 +1,12 @@
+{
+  "name": "@sonr-io/types",
+  "version": "1.0.0",
+  "description": "",
+  "types": "lib",
+  "keywords": [],
+  "author": "sonr",
+  "license": "GPLV2",
+  "scripts": {
+    "tsc": "tsc --declaration"
+  }
+}

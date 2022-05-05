@@ -3,6 +3,7 @@ import { GetSessionState, setSessionState } from "./state";
 import {Result, Status} from './types/Result';
 import { ConfigurationOptions } from "./types/Options";
 import {State} from './types/State';
+import { Session } from '@sonr-io/types';
 
 import { 
     bufferDecode,
@@ -135,7 +136,7 @@ export async function startLogin(name: string): Promise<Credential | undefined> 
 */
 export function finishRegistration(
     credential: PublicKeyCredential
-    ): Promise<Result<PublicKeyCredential>> {
+    ): Promise<Result<Session>> {
     return new Promise((resolve, reject) => {
         try {
             const url: string = assertionEndpoint;
@@ -154,7 +155,7 @@ export function finishRegistration(
                     throw new Error(`Error while creating credential assertion: ${reqBody}`);
                 }
 
-                const makeAssertionOptions: any = JSON.parse(reqBody);
+                const makeAssertionOptions: Session = JSON.parse(reqBody);
                 decodeCredentialsFromAssertion(makeAssertionOptions);
 
                 console.log(makeAssertionOptions);
@@ -180,7 +181,7 @@ export function finishRegistration(
 }
 
 export function finishLogin(
-{ credential }: { credential: PublicKeyCredential; }    ): Promise<Result<PublicKeyCredential>> {
+{ credential }: { credential: PublicKeyCredential; }    ): Promise<Result<Session>> {
     return new Promise((resolve, reject) => {
         try {
             const url: string = authenticateUserEndpoint;
@@ -199,7 +200,7 @@ export function finishLogin(
                     throw new Error(`Error while creating credential assertion: ${reqBody}`);
                 }
 
-                const makeAssertionOptions: any = JSON.parse(reqBody);
+                const makeAssertionOptions: Session = JSON.parse(reqBody);
                 decodeCredentialsFromAssertion(makeAssertionOptions);
 
                 console.log(makeAssertionOptions);

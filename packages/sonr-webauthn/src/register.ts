@@ -6,13 +6,15 @@ import {State} from './types/State';
 import { Result } from "./types/Result";
 import { rejects } from "assert";
 import { ValidateDisplayName, ValidateUserName } from "@sonr-io/validation/src/index";
+import { Session } from "@sonr-io/types";
+import { resolve } from "path";
 
 /**
  * 
  * @param options configuration object for webAuthentication options
  * @returns boolean indicating status of registration operation
  */
-export async function startUserRegistration(options: ConfigurationOptions): Promise<Result<PublicKeyCredential>> {
+export async function startUserRegistration(options: ConfigurationOptions): Promise<Session | undefined> {
     if (!options)
         throw Error("No Configuration options provided, aborting");
 
@@ -33,13 +35,15 @@ export async function startUserRegistration(options: ConfigurationOptions): Prom
         
         console.info(`Credentials created for ${options.name}`);
         console.log(newCredential);
-        const result: Result<PublicKeyCredential> = await finishRegistration(
+        const resp: Result<Session> = await finishRegistration(
             newCredential as PublicKeyCredential
         );
         sessionState = GetSessionState();
-        sessionState.credentials = result.result;
+        sessionState = GetSessionState();
+        sessionState.credentials = resp.result.credential;
         setSessionState(sessionState);
-        return result;
+        return resp.result;
+
     } catch(e)
     {
         console.error(`Error while registering endpoint: ${e}`);

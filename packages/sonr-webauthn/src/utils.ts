@@ -105,6 +105,30 @@ export function decodeCredentialsFromAssertion(assertedCredential: any): boolean
     return false;
 };
 
+
+export function decodeCredentialAssertion(makeCredentialOptions: any): boolean {
+    if (!makeCredentialOptions.publicKey) {
+        return false;
+    }
+    
+    makeCredentialOptions.publicKey.challenge = bufferDecode(makeCredentialOptions.publicKey.challenge);
+    makeCredentialOptions.publicKey.user.id = bufferDecode(makeCredentialOptions.publicKey.user.id);
+    
+
+    if (makeCredentialOptions.publicKey.excludeCredentials) {
+        for (var i = 0; i < makeCredentialOptions.publicKey.excludeCredentials.length; i++) {
+            makeCredentialOptions.publicKey.excludeCredentials[i].id = bufferDecode(makeCredentialOptions.publicKey.excludeCredentials[i].id);
+        }
+    }
+
+    return true;
+}
+
+
+/*
+    Buffer Helpers
+*/
+
 export function string2buffer(data: string) {
     return (new Uint8Array(data.length)).map(function(x, i) {
         return data.charCodeAt(i);

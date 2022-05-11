@@ -10,6 +10,7 @@ import {
     bufferEncode,
     createAssertion,
     createAuthenicator,
+    decodeCredentialAssertion,
     decodeCredentialsFromAssertion,
     encodeCredentialsForAssertion } from "./utils";
 
@@ -72,7 +73,11 @@ export async function startRegistration(name: string): Promise<Credential | unde
     setSessionState(sessionState);
 
     try {
-        const response: Response | void = await fetch(url + '/' + sessionState.user.name, { method: "GET" });
+        const response: Response | void = await fetch(
+            url + '/' + sessionState.user.name,
+            { method: "GET" }
+        );
+        
         if (!response || response == null) { 
             return undefined;
         }
@@ -80,17 +85,8 @@ export async function startRegistration(name: string): Promise<Credential | unde
         const reqBody: string = await response?.text();
         const makeCredentialOptions: any = JSON.parse(reqBody);
         console.log(`Credential Creation Options: ${makeCredentialOptions}`);
-        if (makeCredentialOptions.publicKey)
-        {
-            makeCredentialOptions.publicKey.challenge = bufferDecode(makeCredentialOptions.publicKey.challenge);
-            makeCredentialOptions.publicKey.user.id = bufferDecode(makeCredentialOptions.publicKey.user.id);
-        }
+        decodeCredentialAssertion(makeCredentialOptions);
 
-        if (makeCredentialOptions.publicKey.excludeCredentials) {
-            for (var i = 0; i < makeCredentialOptions.publicKey.excludeCredentials.length; i++) {
-                makeCredentialOptions.publicKey.excludeCredentials[i].id = bufferDecode(makeCredentialOptions.publicKey.excludeCredentials[i].id);
-            }
-        }
         return makeCredentialOptions.publicKey;
     } catch (e)
     {

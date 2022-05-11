@@ -6,6 +6,7 @@ import { ValidateUserName, ValidateDisplayName } from '@sonr-io/validation/src/i
 import { CreateSessionState, GetSessionState, setSessionState } from "./state";
 import {State} from './types/State';
 import { Session } from "@sonr-io/types";
+import { DataProvider } from "./dataProvider";
 
 
 
@@ -20,6 +21,7 @@ export async function startUserLogin(options: ConfigurationOptions): Promise<Ses
 
     try
     {
+        DataProvider.WithConfiguration(options);
         CreateSessionState();
         let sessionState: State = GetSessionState();
         sessionState.user.name = ValidateUserName(options.name);

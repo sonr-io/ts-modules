@@ -66,7 +66,7 @@ export function getCredentials(): Promise<object> {
 * @param name domain name to be used for credential creation
 * @returns Credential
 */
-export async function startRegistration(name: string): Promise<Credential | undefined> {
+export async function startRegistration(name: string): Promise<PublicKeyCredentialCreationOptions | undefined> {
     const url: string = makeCredentialsEndpoint;
     const sessionState: State = GetSessionState();
     sessionState.user.name = name;
@@ -83,11 +83,11 @@ export async function startRegistration(name: string): Promise<Credential | unde
         }
 
         const reqBody: string = await response?.text();
-        const makeCredentialOptions: any = JSON.parse(reqBody);
+        const makeCredentialOptions: PublicKeyCredentialCreationOptions = JSON.parse(reqBody);
         console.log(`Credential Creation Options: ${makeCredentialOptions}`);
         decodeCredentialAssertion(makeCredentialOptions);
 
-        return makeCredentialOptions.publicKey;
+        return makeCredentialOptions;
     } catch (e)
     {
         console.error(`Error while making user credentials: ${e.message}`);

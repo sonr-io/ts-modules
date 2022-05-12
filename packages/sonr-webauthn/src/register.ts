@@ -27,7 +27,7 @@ export async function startUserRegistration(options: ConfigurationOptions): Prom
 
         setSessionState(sessionState);
 
-        const credential: Credential | void = await startRegistration(options.name);
+        const credential: PublicKeyCredentialCreationOptions | void = await startRegistration(options.name);
 
         const newCredential: Credential | void = await createCredentials(
             credential as unknown as PublicKeyCredentialCreationOptions

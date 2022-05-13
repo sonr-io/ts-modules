@@ -8,7 +8,7 @@ module.exports = async () => {
         ],
         coverageThreshold: {
             global: {
-              lines: 5,
+              lines: 4,
             },
         },
         coverageReporters: ["json", "lcov", "text"],

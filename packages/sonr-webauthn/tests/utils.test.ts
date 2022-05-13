@@ -1,5 +1,4 @@
-import { buffer2string } from '../lib/utils';
-import { string2buffer } from './../src/utils';
+import { string2buffer, buffer2string } from './../src/utils';
 
 test('string2buf should returned defined array buffer', () => {
     const buf: Uint8Array = string2buffer("YXNkYXNkYXNkYXNkYXNkYXNk")

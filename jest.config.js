@@ -2,9 +2,15 @@ module.exports = async () => {
     return {
         bail: 3,
         clearMocks: true,
-        "collectCoverageFrom": [
-            "**/*.{js,jsx}",
+        collectCoverageFrom: [
+            "packages/sonr-webauthn/*/**.{js,jsx,ts,tsx}",
+            "packages/sonr-validation/*/**.{js,jsx,ts,tsx}",
         ],
+        coverageThreshold: {
+            global: {
+              lines: 25,
+            },
+        },
         coverageReporters: ["json", "lcov", "text"],
         coverageDirectory: "./coverage",
         verbose: true,

@@ -3,8 +3,7 @@ module.exports = async () => {
         bail: 3,
         clearMocks: true,
         collectCoverageFrom: [
-            "packages/sonr-webauthn/*/**.{js,jsx,ts,tsx}",
-            "packages/sonr-validation/*/**.{js,jsx,ts,tsx}",
+            "packages/sonr-webauthn/*/**.{js,jsx,ts,tsx}"
         ],
         coverageThreshold: {
             global: {

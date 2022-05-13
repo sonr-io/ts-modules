@@ -2,8 +2,8 @@ import { getCredentials } from "./credentials";
 import { Result, Status } from "./types/Result";
 import { ConfigurationOptions } from "./types/Options";
 import { startLogin, finishLogin } from "./webauthn";
-import { ValidateUserName, ValidateDisplayName } from '@sonr-io/validation';
-import { GetSessionState, setSessionState } from "./state";
+import { ValidateUserName, ValidateDisplayName } from '@sonr-io/validation/src/index';
+import { CreateSessionState, GetSessionState, setSessionState } from "./state";
 import {State} from './types/State';
 
 
@@ -20,9 +20,10 @@ export async function startUserLogin(options: ConfigurationOptions): Promise<boo
     return new Promise(async (resolve, reject) => {
         try
         {
-            const sessionState: State = GetSessionState();
-            sessionState.user.name = options.name;
-            sessionState.user.displayName = options.name;
+            CreateSessionState();
+            let sessionState: State = GetSessionState();
+            sessionState.user.name = ValidateUserName(options.name);
+            sessionState.user.displayName = ValidateDisplayName(options.name);
             setSessionState(sessionState);
 
             const credential: Credential = await startLogin(options.name);
@@ -30,6 +31,9 @@ export async function startUserLogin(options: ConfigurationOptions): Promise<boo
             console.info(`Credentials created for ${options.name}`);
             console.log(JSON.stringify(newCredential));
             const result: Result<PublicKeyCredential> = await finishLogin({ credential: newCredential as PublicKeyCredential });
+            sessionState = GetSessionState();
+            sessionState.credentials = result.result;
+            setSessionState(sessionState);
             if (result.status === Status.success)
                 resolve(true);
             else

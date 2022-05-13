@@ -160,15 +160,21 @@ export function finishRegistration(
                 console.log(makeAssertionOptions);
                 resolve({
                     status: Status.success,
-                    
+                    result: makeAssertionOptions,
                 });
             }).catch(function(err) {
                 console.log(err.name);
-                reject(err);
+                reject({
+                    error: err,
+                    status: Status.error
+                });
             });
-        } catch(e) {
-            console.log(`Error while getting credential assertion: ${e.message}`);
-            reject();
+        } catch(err) {
+            console.log(`Error while getting credential assertion: ${err.message}`);
+            reject({
+                error: err,
+                status: Status.error
+            });
         }
     });
 }
@@ -208,40 +214,12 @@ export function finishLogin(
                     status: Status.error
                 });
             });
-        } catch(e) {
-            console.log(`Error while getting credential assertion: ${e.message}`);
-            reject();
+        } catch(err) {
+            console.log(`Error while getting credential assertion: ${err.message}`);
+            reject({
+                error: err,
+                status: Status.error
+            });
         }
     });
 }
-
-/* 
-* This should be used to verify the auth data with the server
-*/
-export function registerNewCredential(newCredential: any) {
-    // Move data into Arrays incase it is super long
-    let attestationObject = new Uint8Array(newCredential.response.attestationObject);
-    let clientDataJSON = new Uint8Array(newCredential.response.clientDataJSON);
-    let rawId = new Uint8Array(newCredential.rawId);
-    
-    /*
-    let authData = assertion.response.authenticatorData;
-    let clientDataJSON = assertion.response.clientDataJSON;
-    let rawId = assertion.rawId;
-    let sig = assertion.response.signature;
-    let userHandle = assertion.response.userHandle;
-    */
-
-    fetch(makeCredentialsEndpoint, {
-        method: 'POST',
-        body: JSON.stringify({
-            id: newCredential.id,
-            rawId: bufferEncode(rawId),
-            type: newCredential.type,
-            response: {
-                attestationObject: bufferEncode(attestationObject),
-                clientDataJSON: bufferEncode(clientDataJSON),
-            },
-        })
-    });
-};

@@ -4,6 +4,7 @@ export function ValidateUserName(username): boolean{
     return matches.length > 0 ;
 }
 
-export function ValidateDisplayName(displayname): string {
-    return displayname.toLowerCase().split('.')[0];
+export function ValidateDisplayName(displayname): boolean {
+    const name: string =  displayname.toLowerCase().split('.')[0];
+    return ValidateUserName(name)
 }

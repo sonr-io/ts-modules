@@ -18,5 +18,5 @@ export interface User {
     /**
      * Credentials owned by the user.
      */
-    credentials: Credential[];
+    credentials: PublicKeyCredential[];
   }

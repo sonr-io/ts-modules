@@ -1,10 +1,12 @@
-export function ValidateUserName(username): boolean{
+export function ValidateUserName(username: string): boolean{
     const processed: string = username.toLowerCase().replace(/\s/g, '');
     const matches: RegExpMatchArray = processed.match('[a-zA-Z0-9]+$');
-    return matches.length > 0 ;
+    return matches.index === 0;
 }
 
-export function ValidateDisplayName(displayname): boolean {
+export function ValidateDisplayName(displayname: string): boolean {
+    if (displayname.indexOf(".") < 0) { return false; }
+    if (displayname.split(".").length > 2) {return false }
     const name: string =  displayname.toLowerCase().split('.')[0];
     return ValidateUserName(name)
 }

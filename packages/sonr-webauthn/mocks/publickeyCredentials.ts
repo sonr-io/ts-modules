@@ -1,14 +1,12 @@
-export const keyCredentialOption: () => PublicKeyCredentialCreationOptions = () => {
+export const keyCredentialOption: () => any = () => {
     return   {
-        challenge: Uint8Array.from(
-            "XSASDACVDVSDFSDF", c => c.charCodeAt(0)),
+        challenge: "XSASDACVDVSDFSDF",
         rp: {
             name: "Duo Security",
             id: "duosecurity.com",
         },
         user: {
-            id: Uint8Array.from(
-                "UZSL85T9AFC", c => c.charCodeAt(0)),
+            id: "UZSL85T9AFC",
             name: "lee@webauthn.example",
             displayName: "Lee",
         },

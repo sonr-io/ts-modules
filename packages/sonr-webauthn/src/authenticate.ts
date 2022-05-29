@@ -14,7 +14,7 @@ import { SessionState } from "./state";
  * @param options configuration object for webAuthentication options
  * @returns boolean indicating status of authentication operation
  */
-export async function startUserLogin(options: ConfigurationOptions): Promise<Session | undefined> {
+export async function startUserLogin(options: ConfigurationOptions): Promise<boolean | undefined> {
     if (!options)
         throw Error("No Configuration options provided, aborting");
 
@@ -33,9 +33,7 @@ export async function startUserLogin(options: ConfigurationOptions): Promise<Ses
         const newCredential: Credential | void = await getCredentials(credential as unknown as PublicKeyCredentialCreationOptions);
         console.info(`Credentials created for ${options.name}`);
         console.log(JSON.stringify(newCredential));
-        const result: Result<Session> = await authn.FinishLogin({ credential: newCredential as PublicKeyCredential });
-
-        sessionState.Credential = result.result.credential;
+        const result: Result<boolean> = await authn.FinishLogin({ credential: newCredential as PublicKeyCredential });
 
         if (result.status === Status.success)
             return result?.result;

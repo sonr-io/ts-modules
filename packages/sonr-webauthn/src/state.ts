@@ -8,7 +8,6 @@ export class SessionState {
         displayName: "testuser",
         id: undefined,
         iconURL: undefined,
-        credentials: undefined
     };
     constructor(intialState?: User) {
         this._state = intialState ? intialState : this._state;
@@ -38,14 +37,5 @@ export class SessionState {
     
     set DisplayName(value: string) {
         this._state.displayName = value;
-    }
-
-
-    get Credential(): PublicKeyCredential {
-        return this._state.credentials[0];
-    }
-
-    set Credential(value: PublicKeyCredential) {
-        this._state.credentials.push(value);
     }
 }

@@ -2,17 +2,11 @@ import { assertionEndpoint, authenticateUserEndpoint, makeCredentialsEndpoint, v
 import { SessionState } from "./state";
 import {Result, Status} from './types/Result';
 import { ConfigurationOptions } from "./types/Options";
-import {State} from './types/State';
-import { Session } from '@sonr-io/types';
 
 import { 
-    bufferDecode,
-    bufferEncode,
     createAssertion,
     createAuthenicator,
-    decodeCredentialAssertion,
-    decodeCredentialsFromAssertion,
-    encodeCredentialsForAssertion } from "./utils";
+    decodeCredentialsFromAssertion,} from "./utils";
 
 export class WebAuthn {
     private _options: ConfigurationOptions;
@@ -32,28 +26,6 @@ export class WebAuthn {
     }
 
     /**
-    * Retrieves authentication Credentials from authentication server
-    * @returns PublicKeyCredentialOptions
-    */
-    public GetCredentials(): Promise<object> {
-        return new Promise<object>((resolve, reject) => {
-            try {
-                const username: string = this._sessionState.UserName;
-                fetch('/credential/' + username).then(function(response) {
-                    console.log(response)
-                    resolve(response);
-                }).catch(function(error) {
-                    console.log(`Error while resolving user credenitals for ${username}`);
-                    reject();
-                });
-            } catch (e)
-            {
-                console.log(`Error while resolving user credentials for ${e.message}`);
-            }
-        });
-    }
-
-    /**
     * @throws Error  
     * @param action 
     * @param name domain name to be used for credential creation
@@ -64,8 +36,9 @@ export class WebAuthn {
         const username: string = this._sessionState.UserName;
 
         try {
+
             const response: Response | void = await fetch(
-                url + '/?username=' + username,
+                url + '/' + username,
                 { method: "GET" }
             );
             
@@ -76,7 +49,7 @@ export class WebAuthn {
             const reqBody: string = await response?.text();
             const makeCredentialOptions: PublicKeyCredentialCreationOptions = JSON.parse(reqBody);
             console.log(`Credential Creation Options: ${makeCredentialOptions}`);
-            decodeCredentialAssertion(makeCredentialOptions);
+            decodeCredentialsFromAssertion(makeCredentialOptions);
 
             return makeCredentialOptions;
         } catch (e)
@@ -121,7 +94,7 @@ export class WebAuthn {
     * Finalizes user registration within the sonr registry.
     * Once presisted name is valid within sonr name registry
     */
-    public async FinishRegistration(credential: PublicKeyCredential): Promise<Result<Session>> {
+    public async FinishRegistration(credential: PublicKeyCredential): Promise<Result<boolean>> {
         return new Promise((resolve, reject) => {
             try {
                 const url: string = assertionEndpoint;
@@ -138,14 +111,9 @@ export class WebAuthn {
                     {
                         throw new Error(`Error while creating credential assertion: ${reqBody}`);
                     }
-
-                    const makeAssertionOptions: Session = JSON.parse(reqBody);
-                    decodeCredentialsFromAssertion(makeAssertionOptions);
-
-                    console.log(makeAssertionOptions);
                     resolve({
                         status: Status.success,
-                        result: makeAssertionOptions,
+                        result: true,
                     });
                 }).catch(function(err) {
                     console.log(err.name);
@@ -169,7 +137,7 @@ export class WebAuthn {
      * @param param0 
      * @returns 
      */
-    public FinishLogin({ credential }: { credential: PublicKeyCredential; } ): Promise<Result<Session>> {
+    public FinishLogin({ credential }: { credential: PublicKeyCredential; } ): Promise<Result<boolean>> {
         return new Promise((resolve, reject) => {
             try {
                 const url: string = authenticateUserEndpoint;
@@ -186,11 +154,7 @@ export class WebAuthn {
                     {
                         throw new Error(`Error while creating credential assertion: ${reqBody}`);
                     }
-    
-                    const makeAssertionOptions: Session = JSON.parse(reqBody);
-                    decodeCredentialsFromAssertion(makeAssertionOptions);
-    
-                    console.log(makeAssertionOptions);
+                    console.log(true);
                     resolve({
                         result: verificationObject,
                         status: Status.success
@@ -224,7 +188,7 @@ export class WebAuthn {
                 if (!username)
                     resolve(false);
 
-                fetch('/user/' + username + '/exists').then(function(response) {
+                fetch && fetch('/user/' + username + '/exists').then(function(response) {
                     resolve(true);
                 }).catch(function() {
                     resolve(false);

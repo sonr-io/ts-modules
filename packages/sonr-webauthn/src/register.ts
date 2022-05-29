@@ -4,7 +4,6 @@ import { WebAuthn } from "./webauthn";
 import {State} from './types/State';
 import { Result } from "./types/Result";
 import { rejects } from "assert";
-import { ValidateDisplayName, ValidateUserName } from "@sonr-io/validation/src/index";
 import { Session } from "@sonr-io/types";
 import { resolve } from "path";
 import { SessionState } from "./state";

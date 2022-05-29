@@ -12,11 +12,7 @@ export interface User {
      */
     displayName: string;
     /**
-     * User's icon url.
+     * User's icon url. (not yet supported)
      */
     iconURL: string;
-    /**
-     * Credentials owned by the user.
-     */
-    credentials: PublicKeyCredential[];
   }

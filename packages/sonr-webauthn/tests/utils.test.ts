@@ -27,5 +27,6 @@ test('decode publick key optionns', () => {
     const credOptions: PublicKeyCredentialCreationOptions = keyCredentialOption();
     decodeCredentialsFromAssertion(credOptions);
     expect(credOptions.challenge).toBeInstanceOf(Uint8Array);
+    expect(credOptions.user.id).toBeInstanceOf(Uint8Array);
 });
 

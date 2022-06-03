@@ -7,7 +7,7 @@
     "build": "lerna run tsc",
     "bundle": "lerna run bundle",
     "lint": "lerna run lint",
-    "test": "jest --config ./jest.config.js",
+    "test": "jest --config ./jest.config.js --coverage",
     "publish:git": "lerna publish from-git",
     "publish:package": "lerna publish from-package",
     "publish:canary": "lerna publish --canary"

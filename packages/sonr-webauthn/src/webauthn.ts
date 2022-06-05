@@ -7,6 +7,7 @@ import {
     createAssertion,
     createAuthenicator,
     decodeCredentialsFromAssertion,} from "./utils";
+import { resolve } from "path";
 
 export class WebAuthn {
     private _options: ConfigurationOptions;
@@ -65,13 +66,17 @@ export class WebAuthn {
     * @param name domain name to be used for credential creation
     * @returns Credential
     */
-    public async StartLogin(name: string): Promise<Credential | undefined> {
+    public async StartLogin(name: string): Promise<Result<Credential>> {
         const url: string = verifyAssertionEndpoint;
         const username: string = this._sessionState.UserName;
         try {
             const response: Response | void = await fetch(url + '/' + username, { method: "GET" });
             if (!response || response == null) { 
-                return undefined;
+                return {
+                    error: new Error("Error while fetching credential options"),
+                    result: undefined,
+                    status: Status.notFound
+                };
             }
 
             const reqBody: string = await response?.text();
@@ -86,7 +91,11 @@ export class WebAuthn {
         } catch (e)
         {
             console.error(`Error while making user credentials: ${e.message}`);
-            throw e;
+            return {
+                error: e,
+                result: undefined,
+                status: Status.notFound
+            };
         }
     }
 
@@ -172,30 +181,6 @@ export class WebAuthn {
                     error: err,
                     status: Status.error
                 });
-            }
-        });
-    }
-
-    /**
-        check if a given user is present in the Sonr registry
-        @returns boolean indiciating user status within registry 
-    */
-    private CheckUserExists(): Promise<boolean> {
-        return new Promise<boolean>((resolve, reject) => {
-            try
-            {
-                const username: string = this._sessionState.UserName;
-                if (!username)
-                    resolve(false);
-
-                fetch && fetch('/user/' + username + '/exists').then(function(response) {
-                    resolve(true);
-                }).catch(function() {
-                    resolve(false);
-                });
-            } catch(e)
-            {
-                console.log(`Error while validating user: ${e.message}`);
             }
         });
     }

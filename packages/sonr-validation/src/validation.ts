@@ -2,7 +2,7 @@ import { ErrorInvalidLength, ErrorMissingPostfix, ErrorSpecialCharacters } from 
 
 export function ValidateUserName(username: string): Error | true{
     if (username == "" || username.length < 3) 
-        return new ErrorInvalidLength();
+        return new ErrorInvalidLength(3);
 
     const processed: string = username.toLowerCase().replace(/\s/g, '');
     const matches: RegExpMatchArray = processed.match('^[a-zA-Z0-9]+$');

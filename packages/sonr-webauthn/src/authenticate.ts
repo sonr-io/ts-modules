@@ -22,8 +22,9 @@ export async function startUserLogin(options: ConfigurationOptions): Promise<boo
         {
             CreateSessionState();
             let sessionState: State = GetSessionState();
-            sessionState.user.name = ValidateUserName(options.name);
-            sessionState.user.displayName = ValidateDisplayName(options.name);
+            if (ValidateUserName(options.name))
+                sessionState.user.name = options.name;
+            
             setSessionState(sessionState);
 
             const credential: Credential = await startLogin(options.name);

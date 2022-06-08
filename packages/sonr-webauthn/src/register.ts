@@ -20,8 +20,8 @@ export async function startUserRegistration(options: ConfigurationOptions): Prom
     {
         CreateSessionState();
         let sessionState: State = GetSessionState();
-        sessionState.user.name = ValidateUserName(options.name);
-        sessionState.user.displayName = ValidateDisplayName(options.name);
+        if (ValidateUserName(options.name))
+        sessionState.user.name = options.name;
 
         setSessionState(sessionState);
 

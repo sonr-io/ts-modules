@@ -29,7 +29,7 @@ export async function startUserLogin(options: ConfigurationOptions): Promise<boo
         authn.WithSessionState(sessionState);
 
 
-        const credential: Credential = await authn.StartLogin(options.name);
+        const credential: Result<Credential> = await authn.StartLogin(options.name);
         const newCredential: Credential | void = await getCredentials(credential as unknown as PublicKeyCredentialCreationOptions);
         console.info(`Credentials created for ${options.name}`);
         console.log(JSON.stringify(newCredential));

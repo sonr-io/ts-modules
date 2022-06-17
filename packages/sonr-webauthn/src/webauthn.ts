@@ -6,8 +6,9 @@ import { ConfigurationOptions } from "./types/Options";
 import { 
     createAssertion,
     createAuthenicator,
-    decodeCredentialsFromAssertion,} from "./utils";
-import { resolve } from "path";
+    decodeCredentialsFromAssertion,
+    getOs,
+} from "./utils";
 
 export class WebAuthn {
     private _options: ConfigurationOptions;
@@ -33,14 +34,18 @@ export class WebAuthn {
     * @returns Credential
     */
     public async StartRegistration(name: string): Promise<PublicKeyCredentialCreationOptions | undefined> {
-        const url: string = makeCredentialsEndpoint;
+        const url: string = "https://highway.sh" + makeCredentialsEndpoint;
         const username: string = this._sessionState.UserName;
 
         try {
-
             const response: Response | void = await fetch(
                 url + '/' + username,
-                { method: "GET" }
+                { 
+                    method: "GET",
+                    headers: {
+                        accept: 'application/json',
+                    }
+                }, 
             );
             
             if (!response || response == null) { 
@@ -50,7 +55,7 @@ export class WebAuthn {
             const reqBody: string = await response?.text();
             const makeCredentialOptions: PublicKeyCredentialCreationOptions = JSON.parse(reqBody);
             console.log(`Credential Creation Options: ${makeCredentialOptions}`);
-            decodeCredentialsFromAssertion(makeCredentialOptions);
+            decodeCredentialsFromAssertion(makeCredentialOptions, username);
 
             return makeCredentialOptions;
         } catch (e)
@@ -70,7 +75,7 @@ export class WebAuthn {
         const url: string = verifyAssertionEndpoint;
         const username: string = this._sessionState.UserName;
         try {
-            const response: Response | void = await fetch(url + '/' + username, { method: "GET" });
+            const response: Response | void = await fetch(url + '?username=' + username, { method: "GET" });
             if (!response || response == null) { 
                 return {
                     error: new Error("Error while fetching credential options"),
@@ -84,7 +89,7 @@ export class WebAuthn {
             console.log(`Credential Creation Options: ${makeCredentialOptions}`);
             if (makeCredentialOptions.publicKey)
             {
-                decodeCredentialsFromAssertion(makeCredentialOptions);
+                decodeCredentialsFromAssertion(makeCredentialOptions, username);
             }
 
             return makeCredentialOptions.publicKey;
@@ -106,10 +111,10 @@ export class WebAuthn {
     public async FinishRegistration(credential: PublicKeyCredential): Promise<Result<boolean>> {
         return new Promise((resolve, reject) => {
             try {
-                const url: string = assertionEndpoint;
+                const url: string =  "https://highway.sh" + assertionEndpoint + '?username=' + this._sessionState.UserName + "&os=" + getOs() + "&label=" + "test";
                 const verificationObject: any = createAssertion(credential);
                 const serializedCred: string = JSON.stringify(verificationObject);
-                verificationObject && fetch(url + '/' + this._sessionState.UserName, {
+                verificationObject && fetch(url + '?username=' + this._sessionState.UserName, {
                     credentials: "same-origin",
                     method: 'POST',
                     body: serializedCred,

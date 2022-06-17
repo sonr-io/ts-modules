@@ -1,6 +1,5 @@
 import { BrowserSupport } from "./enums";
 import { storageKey } from "./constants";
-import { ConfigurationOptions } from "./types";
 
 export function getStorageKey(): string  { return storageKey; }
 
@@ -44,7 +43,7 @@ export function createAuthenicator(credential: PublicKeyCredential): any {
  * 
  * @returns BrowserSupport Support status indicating compatibility for webauthn
  */
-export function detectWebAuthnSupport(config: ConfigurationOptions): BrowserSupport {
+export function detectWebAuthnSupport(): BrowserSupport {
     if (window.PublicKeyCredential === undefined ||
         typeof window.PublicKeyCredential !== "function") {
         if (window.location.protocol === "http:" 
@@ -91,11 +90,12 @@ export function encodeCredentialsForAssertion(assertedCredential: any): any {
  * @param assertedCredential  key credentials
  * @returns status (bool)
  */
-export function decodeCredentialsFromAssertion(assertedCredential: PublicKeyCredentialCreationOptions): boolean {
+export function decodeCredentialsFromAssertion(assertedCredential: PublicKeyCredentialCreationOptions, username: string): boolean {
     if(assertedCredential)
     {
         assertedCredential.challenge = bufferDecode(assertedCredential.challenge);
         assertedCredential.user.id = bufferDecode(assertedCredential.user.id);
+        assertedCredential.user.name  = username;
         assertedCredential.excludeCredentials && assertedCredential.excludeCredentials.forEach(function (listItem) {
             if (!listItem) { return }
             listItem.id = bufferDecode(listItem.id);
@@ -149,3 +149,14 @@ export function buffer2string(buf: Uint8Array): string {
 
     return str;
 }
+
+export function getOs() {
+    const os = ["Windows", "Linux", "Macintosh"]; // add your OS values
+    const userAgent = navigator.userAgent;
+    for (let i = 0; i < os.length; i++) {
+        if (userAgent.indexOf(os[i]) > -1) {
+        return os[i];
+        }
+    }
+    return "Unknown";
+};

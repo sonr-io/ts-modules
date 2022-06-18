@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = (env) => {
   const isProd = env.production ? true : false;
@@ -30,6 +31,11 @@ module.exports = (env) => {
     resolve: {
       extensions: ['.tsx', '.ts', '.js'],
     },
+    plugins: [
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+      }),
+    ],
     output: {
       chunkFilename: '[name].js',
       chunkFormat: 'module',

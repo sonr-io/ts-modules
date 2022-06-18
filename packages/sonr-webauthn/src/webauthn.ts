@@ -4,10 +4,10 @@ import {Result, Status} from './types/Result';
 import { ConfigurationOptions } from "./types/Options";
 
 import { 
+    buildFinishRegistrationEndpoint,
     createAssertion,
     createAuthenicator,
     decodeCredentialsFromAssertion,
-    getOs,
 } from "./utils";
 
 export class WebAuthn {
@@ -108,13 +108,18 @@ export class WebAuthn {
     * Finalizes user registration within the sonr registry.
     * Once presisted name is valid within sonr name registry
     */
-    public async FinishRegistration(credential: PublicKeyCredential): Promise<Result<boolean>> {
+    public async FinishRegistration(): Promise<Result<boolean>> {
         return new Promise((resolve, reject) => {
             try {
-                const url: string = "https://highway-f2xzikbm3-sonr.vercel.app" + assertionEndpoint + '?username=' + this._sessionState.UserName + "&os=" + getOs() + "&label=" + "test";
-                const verificationObject: any = createAssertion(credential);
+                if (!this._sessionState.Credential) {
+                    throw new Error("No Credential Registered, aborting");
+                }
+
+                let url: string = buildFinishRegistrationEndpoint(assertionEndpoint, this._sessionState.DisplayName, "label");
+
+                const verificationObject: any = createAssertion(this._sessionState.Credential);
                 const serializedCred: string = JSON.stringify(verificationObject);
-                verificationObject && fetch(url + '?username=' + this._sessionState.UserName, {
+                verificationObject && fetch(url, {
                     credentials: "same-origin",
                     method: 'POST',
                     body: serializedCred,

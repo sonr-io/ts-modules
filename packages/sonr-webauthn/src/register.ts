@@ -31,9 +31,8 @@ export async function startUserRegistration(options: ConfigurationOptions): Prom
         
         console.info(`Credentials created for ${options.name}`);
         console.log(newCredential);
-        const resp: Result<boolean> = await authn.FinishRegistration(
-            newCredential as PublicKeyCredential
-        );
+        authn.SessionState.Credential = newCredential as PublicKeyCredential;
+        const resp: Result<boolean> = await authn.FinishRegistration();
         
         return resp.result;
 

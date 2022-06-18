@@ -122,8 +122,13 @@ export function string2buffer(data: string) {
 */
 export function bufferEncode(value: ArrayBuffer): string {
     console.log(value);
-    const base65Str: Buffer = Buffer.from(String.fromCharCode(...new Uint8Array(value)), 'base64');
-    return base65Str.toString()
+    const base65Str: string = Buffer.from(value)
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
+
+    return base65Str;
 }
 
 // Don't drop any blanks
@@ -158,3 +163,7 @@ export function getOs() {
     }
     return "Unknown";
 };
+
+export function buildFinishRegistrationEndpoint(url: string, name: string, label: string): string {
+    return `${url}?username=${name}&os=${getOs()}&label=${label}`;
+}

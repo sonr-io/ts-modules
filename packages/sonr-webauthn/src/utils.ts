@@ -46,9 +46,7 @@ export function createAuthenicator(credential: PublicKeyCredential): any {
 export function detectWebAuthnSupport(): BrowserSupport {
     if (window.PublicKeyCredential === undefined ||
         typeof window.PublicKeyCredential !== "function") {
-        if (window.location.protocol === "http:" 
-            && (window.location.hostname !== "localhost" 
-            && window.location.hostname !== "127.0.0.1")) {
+        if (window.location.protocol === "http:") {
             return BrowserSupport.NonHttps;
         }
 

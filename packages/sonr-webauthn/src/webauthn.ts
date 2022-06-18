@@ -33,13 +33,13 @@ export class WebAuthn {
     * @param name domain name to be used for credential creation
     * @returns Credential
     */
-    public async StartRegistration(name: string): Promise<PublicKeyCredentialCreationOptions | undefined> {
-        const url: string = "https://highway.sh" + makeCredentialsEndpoint;
+    public async StartRegistration(): Promise<PublicKeyCredentialCreationOptions | undefined> {
+        const url: string = "https://highway-f2xzikbm3-sonr.vercel.app" + makeCredentialsEndpoint;
         const username: string = this._sessionState.UserName;
 
         try {
             const response: Response | void = await fetch(
-                url + '/' + username,
+                url + '?username=' + username,
                 { 
                     method: "GET",
                     headers: {
@@ -53,10 +53,10 @@ export class WebAuthn {
             }
 
             const reqBody: string = await response?.text();
-            const makeCredentialOptions: PublicKeyCredentialCreationOptions = JSON.parse(reqBody);
+            const makeCredentialOptions: PublicKeyCredentialCreationOptions = JSON.parse(reqBody).publicKey;
             console.log(`Credential Creation Options: ${makeCredentialOptions}`);
             decodeCredentialsFromAssertion(makeCredentialOptions, username);
-
+            makeCredentialOptions.rp.id = window.location.hostname;
             return makeCredentialOptions;
         } catch (e)
         {
@@ -71,7 +71,7 @@ export class WebAuthn {
     * @param name domain name to be used for credential creation
     * @returns Credential
     */
-    public async StartLogin(name: string): Promise<Result<Credential>> {
+    public async StartLogin(): Promise<Result<Credential>> {
         const url: string = verifyAssertionEndpoint;
         const username: string = this._sessionState.UserName;
         try {
@@ -111,7 +111,7 @@ export class WebAuthn {
     public async FinishRegistration(credential: PublicKeyCredential): Promise<Result<boolean>> {
         return new Promise((resolve, reject) => {
             try {
-                const url: string =  "https://highway.sh" + assertionEndpoint + '?username=' + this._sessionState.UserName + "&os=" + getOs() + "&label=" + "test";
+                const url: string = "https://highway-f2xzikbm3-sonr.vercel.app" + assertionEndpoint + '?username=' + this._sessionState.UserName + "&os=" + getOs() + "&label=" + "test";
                 const verificationObject: any = createAssertion(credential);
                 const serializedCred: string = JSON.stringify(verificationObject);
                 verificationObject && fetch(url + '?username=' + this._sessionState.UserName, {
@@ -154,6 +154,7 @@ export class WebAuthn {
     public FinishLogin({ credential }: { credential: PublicKeyCredential; } ): Promise<Result<boolean>> {
         return new Promise((resolve, reject) => {
             try {
+                window.location.hostname
                 const url: string = authenticateUserEndpoint;
                 const verificationObject: any = createAuthenicator(credential);
                 const serializedCred: string = JSON.stringify(verificationObject);

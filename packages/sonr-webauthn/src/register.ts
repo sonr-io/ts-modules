@@ -23,7 +23,7 @@ export async function startUserRegistration(options: ConfigurationOptions): Prom
 
         authn.WithSessionState(sessionState);
 
-        const credential: PublicKeyCredentialCreationOptions | void = await authn.StartRegistration(options.name);
+        const credential: PublicKeyCredentialCreationOptions | void = await authn.StartRegistration();
 
         const newCredential: Credential | void = await createCredentials(
             credential as unknown as PublicKeyCredentialCreationOptions

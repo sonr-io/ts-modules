@@ -2,10 +2,10 @@ import { SessionState } from "../src/state";
 import { ConfigurationOptions } from "../src/types/Options";
 import { WebAuthn } from "./../src/webauthn";
 
-let instance: WebAuthn = undefined;
+let instance: WebAuthn;
 let sessionState: SessionState = new SessionState();
 
-let config: ConfigurationOptions = undefined;
+let config: ConfigurationOptions;
 beforeEach(() => {
     config = {
         name: "test",

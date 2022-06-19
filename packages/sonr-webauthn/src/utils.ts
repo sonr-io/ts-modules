@@ -89,19 +89,12 @@ export function encodeCredentialsForAssertion(assertedCredential: any): any {
  * @param assertedCredential  key credentials
  * @returns status (bool)
  */
-<<<<<<< HEAD
-export function decodeCredentialsFromAssertion(assertedCredential: PublicKeyCredentialCreationOptions): boolean {
-=======
 export function decodeCredentialsFromAssertion(assertedCredential: PublicKeyCredentialCreationOptions, username: string): boolean {
->>>>>>> 681c439e2b5d0b6a14cafffd2ffd078e8eac20d9
     if(assertedCredential)
     {
         assertedCredential.challenge = bufferDecode(assertedCredential.challenge);
         assertedCredential.user.id = bufferDecode(assertedCredential.user.id);
-<<<<<<< HEAD
-=======
         assertedCredential.user.name  = username;
->>>>>>> 681c439e2b5d0b6a14cafffd2ffd078e8eac20d9
         assertedCredential.excludeCredentials && assertedCredential.excludeCredentials.forEach(function (listItem) {
             if (!listItem) { return }
             listItem.id = bufferDecode(listItem.id);
@@ -130,10 +123,6 @@ export function string2buffer(data: string) {
 */
 export function bufferEncode(value: ArrayBuffer): string {
     console.log(value);
-<<<<<<< HEAD
-    const base65Str: Buffer = Buffer.from(String.fromCharCode(...new Uint8Array(value)), 'base64');
-    return base65Str.toString()
-=======
     const base65Str: string = Buffer.from(value)
     .toString("base64")
     .replace(/\+/g, "-")
@@ -141,7 +130,6 @@ export function bufferEncode(value: ArrayBuffer): string {
     .replace(/=/g, "");
 
     return base65Str;
->>>>>>> 681c439e2b5d0b6a14cafffd2ffd078e8eac20d9
 }
 
 

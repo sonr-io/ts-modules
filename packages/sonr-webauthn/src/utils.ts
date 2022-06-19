@@ -131,9 +131,9 @@ export function bufferEncode(value: ArrayBuffer): string {
     return base65Str;
 }
 
-// Don't drop any blanks
+
 export function bufferDecode(value): Uint8Array {
-    return Uint8Array.from(atob(value), c => c.charCodeAt(0));
+    return Uint8Array.from(Buffer.from(value));
 }
 
 /**

@@ -1,11 +1,7 @@
 import { createCredentials } from "./credentials";
 import { ConfigurationOptions } from "./types/Options";
 import { WebAuthn } from "./webauthn";
-import {State} from './types/State';
 import { Result } from "./types/Result";
-import { rejects } from "assert";
-import { Session } from "@sonr-io/types";
-import { resolve } from "path";
 import { SessionState } from "./state";
 
 /**
@@ -13,7 +9,7 @@ import { SessionState } from "./state";
  * @param options configuration object for webAuthentication options
  * @returns boolean indicating status of registration operation
  */
-export async function startUserRegistration(options: ConfigurationOptions): Promise<Session | undefined> {
+export async function startUserRegistration(options: ConfigurationOptions): Promise<boolean> {
     if (!options)
         throw Error("No Configuration options provided, aborting");
 
@@ -27,7 +23,7 @@ export async function startUserRegistration(options: ConfigurationOptions): Prom
 
         authn.WithSessionState(sessionState);
 
-        const credential: PublicKeyCredentialCreationOptions | void = await authn.StartRegistration(options.name);
+        const credential: PublicKeyCredentialCreationOptions | void = await authn.StartRegistration();
 
         const newCredential: Credential | void = await createCredentials(
             credential as unknown as PublicKeyCredentialCreationOptions
@@ -35,11 +31,8 @@ export async function startUserRegistration(options: ConfigurationOptions): Prom
         
         console.info(`Credentials created for ${options.name}`);
         console.log(newCredential);
-        const resp: Result<Session> = await authn.FinishRegistration(
-            newCredential as PublicKeyCredential
-        );
-
-        sessionState.Credential = resp.result.credential;
+        authn.SessionState.Credential = newCredential as PublicKeyCredential;
+        const resp: Result<boolean> = await authn.FinishRegistration();
         
         return resp.result;
 

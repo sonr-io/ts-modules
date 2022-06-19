@@ -9,8 +9,19 @@ export class SessionState {
         id: undefined,
         iconURL: undefined,
     };
+
+    private _credential: PublicKeyCredential;
+
     constructor(intialState?: User) {
         this._state = intialState ? intialState : this._state;
+    }
+
+    get Credential(): PublicKeyCredential {
+        return this._credential;
+    }
+
+    set Credential(value: PublicKeyCredential) {
+        this._credential = value;
     }
 
     get SessionState(): User {

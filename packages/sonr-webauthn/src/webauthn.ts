@@ -4,9 +4,11 @@ import {Result, Status} from './types/Result';
 import { ConfigurationOptions } from "./types/Options";
 
 import { 
+    buildFinishRegistrationEndpoint,
     createAssertion,
     createAuthenicator,
-    decodeCredentialsFromAssertion,} from "./utils";
+    decodeCredentialsFromAssertion,
+} from "./utils";
 
 export class WebAuthn {
     private _options: ConfigurationOptions;
@@ -31,15 +33,19 @@ export class WebAuthn {
     * @param name domain name to be used for credential creation
     * @returns Credential
     */
-    public async StartRegistration(name: string): Promise<PublicKeyCredentialCreationOptions | undefined> {
-        const url: string = makeCredentialsEndpoint;
+    public async StartRegistration(): Promise<PublicKeyCredentialCreationOptions | undefined> {
+        const url: string = "https://highway-f2xzikbm3-sonr.vercel.app" + makeCredentialsEndpoint;
         const username: string = this._sessionState.UserName;
 
         try {
-
             const response: Response | void = await fetch(
-                url + '/' + username,
-                { method: "GET" }
+                url + '?username=' + username,
+                { 
+                    method: "GET",
+                    headers: {
+                        accept: 'application/json',
+                    }
+                }, 
             );
             
             if (!response || response == null) { 
@@ -47,10 +53,10 @@ export class WebAuthn {
             }
 
             const reqBody: string = await response?.text();
-            const makeCredentialOptions: PublicKeyCredentialCreationOptions = JSON.parse(reqBody);
+            const makeCredentialOptions: PublicKeyCredentialCreationOptions = JSON.parse(reqBody).publicKey;
             console.log(`Credential Creation Options: ${makeCredentialOptions}`);
-            decodeCredentialsFromAssertion(makeCredentialOptions);
-
+            decodeCredentialsFromAssertion(makeCredentialOptions, username);
+            makeCredentialOptions.rp.id = window.location.hostname;
             return makeCredentialOptions;
         } catch (e)
         {
@@ -65,13 +71,17 @@ export class WebAuthn {
     * @param name domain name to be used for credential creation
     * @returns Credential
     */
-    public async StartLogin(name: string): Promise<Credential | undefined> {
+    public async StartLogin(): Promise<Result<Credential>> {
         const url: string = verifyAssertionEndpoint;
         const username: string = this._sessionState.UserName;
         try {
-            const response: Response | void = await fetch(url + '/' + username, { method: "GET" });
+            const response: Response | void = await fetch(url + '?username=' + username, { method: "GET" });
             if (!response || response == null) { 
-                return undefined;
+                return {
+                    error: new Error("Error while fetching credential options"),
+                    result: undefined,
+                    status: Status.notFound
+                };
             }
 
             const reqBody: string = await response?.text();
@@ -79,14 +89,18 @@ export class WebAuthn {
             console.log(`Credential Creation Options: ${makeCredentialOptions}`);
             if (makeCredentialOptions.publicKey)
             {
-                decodeCredentialsFromAssertion(makeCredentialOptions);
+                decodeCredentialsFromAssertion(makeCredentialOptions, username);
             }
 
             return makeCredentialOptions.publicKey;
         } catch (e)
         {
             console.error(`Error while making user credentials: ${e.message}`);
-            throw e;
+            return {
+                error: e,
+                result: undefined,
+                status: Status.notFound
+            };
         }
     }
 
@@ -94,13 +108,18 @@ export class WebAuthn {
     * Finalizes user registration within the sonr registry.
     * Once presisted name is valid within sonr name registry
     */
-    public async FinishRegistration(credential: PublicKeyCredential): Promise<Result<boolean>> {
+    public async FinishRegistration(): Promise<Result<boolean>> {
         return new Promise((resolve, reject) => {
             try {
-                const url: string = assertionEndpoint;
-                const verificationObject: any = createAssertion(credential);
+                if (!this._sessionState.Credential) {
+                    throw new Error("No Credential Registered, aborting");
+                }
+
+                let url: string = buildFinishRegistrationEndpoint(assertionEndpoint, this._sessionState.DisplayName, "label");
+
+                const verificationObject: any = createAssertion(this._sessionState.Credential);
                 const serializedCred: string = JSON.stringify(verificationObject);
-                verificationObject && fetch(url + '/' + this._sessionState.UserName, {
+                verificationObject && fetch(url, {
                     credentials: "same-origin",
                     method: 'POST',
                     body: serializedCred,
@@ -140,6 +159,7 @@ export class WebAuthn {
     public FinishLogin({ credential }: { credential: PublicKeyCredential; } ): Promise<Result<boolean>> {
         return new Promise((resolve, reject) => {
             try {
+                window.location.hostname
                 const url: string = authenticateUserEndpoint;
                 const verificationObject: any = createAuthenicator(credential);
                 const serializedCred: string = JSON.stringify(verificationObject);
@@ -172,30 +192,6 @@ export class WebAuthn {
                     error: err,
                     status: Status.error
                 });
-            }
-        });
-    }
-
-    /**
-        check if a given user is present in the Sonr registry
-        @returns boolean indiciating user status within registry 
-    */
-    private CheckUserExists(): Promise<boolean> {
-        return new Promise<boolean>((resolve, reject) => {
-            try
-            {
-                const username: string = this._sessionState.UserName;
-                if (!username)
-                    resolve(false);
-
-                fetch && fetch('/user/' + username + '/exists').then(function(response) {
-                    resolve(true);
-                }).catch(function() {
-                    resolve(false);
-                });
-            } catch(e)
-            {
-                console.log(`Error while validating user: ${e.message}`);
             }
         });
     }

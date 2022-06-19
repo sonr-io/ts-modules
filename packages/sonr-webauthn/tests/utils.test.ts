@@ -1,4 +1,5 @@
-import { string2buffer, buffer2string } from './../src/utils';
+import { string2buffer, buffer2string, decodeCredentialsFromAssertion } from './../src/utils';
+import {keyCredentialOption} from './../mocks/publickeyCredentials';
 
 test('string2buf should returned defined array buffer', () => {
     const buf: Uint8Array = string2buffer("YXNkYXNkYXNkYXNkYXNkYXNk")
@@ -21,3 +22,11 @@ test('buffer2string should return decoded string from buffer', () => {
     const str: string = buffer2string(buf)
     expect(str).toBe('YXN')
 });
+
+test('decode publick key optionns', () => {
+    const credOptions: PublicKeyCredentialCreationOptions = keyCredentialOption();
+    decodeCredentialsFromAssertion(credOptions, "dev");
+    expect(credOptions.challenge).toBeInstanceOf(Uint8Array);
+    expect(credOptions.user.id).toBeInstanceOf(Uint8Array);
+});
+

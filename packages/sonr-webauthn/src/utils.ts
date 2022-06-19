@@ -46,9 +46,7 @@ export function createAuthenicator(credential: PublicKeyCredential): any {
 export function detectWebAuthnSupport(): BrowserSupport {
     if (window.PublicKeyCredential === undefined ||
         typeof window.PublicKeyCredential !== "function") {
-        if (window.location.protocol === "http:" 
-            && (window.location.hostname !== "localhost" 
-            && window.location.hostname !== "127.0.0.1")) {
+        if (window.location.protocol === "http:") {
             return BrowserSupport.NonHttps;
         }
 
@@ -90,12 +88,14 @@ export function encodeCredentialsForAssertion(assertedCredential: any): any {
  * @param assertedCredential  key credentials
  * @returns status (bool)
  */
-export function decodeCredentialsFromAssertion(assertedCredential: any): boolean {
-
-    if(assertedCredential.publicKey)
+export function decodeCredentialsFromAssertion(assertedCredential: PublicKeyCredentialCreationOptions, username: string): boolean {
+    if(assertedCredential)
     {
-        assertedCredential.publicKey.challenge = bufferDecode(assertedCredential.publicKey.challenge);
-        assertedCredential.publicKey.allowCredentials.forEach(function (listItem) {
+        assertedCredential.challenge = bufferDecode(assertedCredential.challenge);
+        assertedCredential.user.id = bufferDecode(assertedCredential.user.id);
+        assertedCredential.user.name  = username;
+        assertedCredential.excludeCredentials && assertedCredential.excludeCredentials.forEach(function (listItem) {
+            if (!listItem) { return }
             listItem.id = bufferDecode(listItem.id);
         });
 
@@ -105,41 +105,65 @@ export function decodeCredentialsFromAssertion(assertedCredential: any): boolean
     return false;
 };
 
+/*
+    Buffer Helpers
+*/
+
 export function string2buffer(data: string) {
-    return (new Uint8Array(data.length)).map(function(x, i) {
+    return new Uint8Array(data.length).map(function(x, i) {
         return data.charCodeAt(i);
     });
 }
 
 /**
  * Transforms an ArrayBuffer to base64 string
-* @param value arraybuffer to be transformed 
-* @returns string base64 encoded array value
+* @param value ArrayBuffer 
+* @returns string base64
 */
 export function bufferEncode(value: ArrayBuffer): string {
-    try 
-    {
-        const base65Str: string = btoa(String.fromCharCode(...new Uint8Array(value)));
-        return base65Str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
-    } catch(e) {
-        console.log(`Error while encoding key credentials: ${e.message}`);
-    }
+    console.log(value);
+    const base65Str: string = Buffer.from(value)
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
+
+    return base65Str;
 }
 
-// Don't drop any blanks
+
 export function bufferDecode(value): Uint8Array {
-    return Uint8Array.from(atob(value), c => c.charCodeAt(0));
+    return Uint8Array.from(Buffer.from(value));
 }
 
-export function buffer2string(buf: any) {
+/**
+ * @param buf Uint8AArray
+ * @returns string
+ */
+export function buffer2string(buf: Uint8Array): string {
     let str = "";
     if (!(buf.constructor === Uint8Array)) {
         buf = new Uint8Array(buf);
     }
 
-    buf.map(function(x: any) {
-        return str += String.fromCharCode(x);
-    });
+    for (let i =0; i < buf.length; i ++) {
+        str += String.fromCharCode(buf[i]);
+    };
 
     return str;
+}
+
+export function getOs() {
+    const os = ["Windows", "Linux", "Macintosh"]; // add your OS values
+    const userAgent = navigator.userAgent;
+    for (let i = 0; i < os.length; i++) {
+        if (userAgent.indexOf(os[i]) > -1) {
+        return os[i];
+        }
+    }
+    return "Unknown";
+};
+
+export function buildFinishRegistrationEndpoint(url: string, name: string, label: string): string {
+    return `${url}?username=${name}&os=${getOs()}&label=${label}`;
 }

@@ -38,7 +38,7 @@ export async function getCredentials(pk: PublicKeyCredentialCreationOptions): Pr
         if (browserSupport == BrowserSupport.NonHttps 
             || browserSupport == BrowserSupport.Unsupported)
             throw new Error("Browser does not support credentials");
-        const credResponse = await navigator.credentials.get({
+        const credResponse: Credential = await navigator.credentials.get({
             publicKey: pk
         });
 

@@ -1,31 +1,29 @@
 import { createCredentials } from "./credentials";
 import { ConfigurationOptions } from "./types/Options";
-import { startRegistration, finishRegistration} from "./webauthn";
-import {CreateSessionState, GetSessionState, setSessionState} from './state';
-import {State} from './types/State';
+import { WebAuthn } from "./webauthn";
 import { Result } from "./types/Result";
-import { rejects } from "assert";
-import { ValidateDisplayName, ValidateUserName } from "@sonr-io/validation/src/index";
+import { SessionState } from "./state";
 
 /**
  * 
  * @param options configuration object for webAuthentication options
  * @returns boolean indicating status of registration operation
  */
-export async function startUserRegistration(options: ConfigurationOptions): Promise<Result<PublicKeyCredential>> {
+export async function startUserRegistration(options: ConfigurationOptions): Promise<boolean> {
     if (!options)
         throw Error("No Configuration options provided, aborting");
 
     try
     {
-        CreateSessionState();
-        let sessionState: State = GetSessionState();
-        if (ValidateUserName(options.name))
-        sessionState.user.name = options.name;
+        const authn: WebAuthn = new WebAuthn(options);
 
-        setSessionState(sessionState);
+        let sessionState: SessionState = new SessionState();
+        sessionState.UserName = options.name;
+        sessionState.DisplayName = options.name;
 
-        const credential: Credential | void = await startRegistration(options.name);
+        authn.WithSessionState(sessionState);
+
+        const credential: PublicKeyCredentialCreationOptions | void = await authn.StartRegistration();
 
         const newCredential: Credential | void = await createCredentials(
             credential as unknown as PublicKeyCredentialCreationOptions
@@ -33,13 +31,11 @@ export async function startUserRegistration(options: ConfigurationOptions): Prom
         
         console.info(`Credentials created for ${options.name}`);
         console.log(newCredential);
-        const result: Result<PublicKeyCredential> = await finishRegistration(
-            newCredential as PublicKeyCredential
-        );
-        sessionState = GetSessionState();
-        sessionState.credentials = result.result;
-        setSessionState(sessionState);
-        return result;
+        authn.SessionState.Credential = newCredential as PublicKeyCredential;
+        const resp: Result<boolean> = await authn.FinishRegistration();
+        
+        return resp.result;
+
     } catch(e)
     {
         console.error(`Error while registering endpoint: ${e}`);

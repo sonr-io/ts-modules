@@ -26,9 +26,11 @@
   "author": "sonr.io",
   "license": "GPLV2",
   "dependencies": {
-    "@sonr-io/validation": "0.0.1"
+    "@sonr-io/validation": "1.0.1",
+    "buffer": "^6.0.3"
   },
   "devDependencies": {
+    "@sonr-io/types": "1.0.0",
     "ts-loader": "^9.2.8",
     "webpack": "^5.70.0",
     "webpack-cli": "^4.9.2"

@@ -30,15 +30,19 @@ export async function startUserLogin(options: ConfigurationOptions): Promise<boo
 
 
         const credential: Result<Credential> = await authn.StartLogin();
+        options?.logingHooks?.start();
+
         const newCredential: Credential | void = await getCredentials(credential as unknown as PublicKeyCredentialCreationOptions);
         console.info(`Credentials created for ${options.name}`);
-        console.log(JSON.stringify(newCredential));
+
         const result: Result<boolean> = await authn.FinishLogin({ credential: newCredential as PublicKeyCredential });
+        options?.logingHooks?.finish();
 
         if (result.status === Status.success)
             return result?.result;
         else
             return result?.result;
+
     } catch(e)
     {
         console.error(`Error while authenticating: ${e}`);

@@ -24,7 +24,7 @@ export async function startUserRegistration(options: ConfigurationOptions): Prom
         authn.WithSessionState(sessionState);
 
         const credential: PublicKeyCredentialCreationOptions | void = await authn.StartRegistration();
-
+        options?.registrationHooks?.finish();
         const newCredential: Credential | void = await createCredentials(
             credential as unknown as PublicKeyCredentialCreationOptions
         );
@@ -33,7 +33,8 @@ export async function startUserRegistration(options: ConfigurationOptions): Prom
         console.log(newCredential);
         authn.SessionState.Credential = newCredential as PublicKeyCredential;
         const resp: Result<boolean> = await authn.FinishRegistration();
-        
+        options?.registrationHooks?.start();
+
         return resp.result;
 
     } catch(e)

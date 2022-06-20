@@ -12,11 +12,11 @@ export interface ConfigurationOptions {
 };
 
 export interface RegistrationHookDefinition {
-    start: () => void;
-    finish: () => void;
+    afterStart: () => void;
+    afterFinish: () => void;
 };
 
 export interface AuthenticationHookDefinition {
-    start: () => void;
-    finish: () => void;
+    afterStart: () => void;
+    afterFinish: () => void;
 }

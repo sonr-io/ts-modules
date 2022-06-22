@@ -10,7 +10,7 @@
     "access": "public"
   },
   "main": "dist/main.js",
-  "module": "dist/esm/index.js",
+  "module": "dist/main.js",
   "types": "lib/types/index.d.ts",
   "scripts": {
     "bundle:prod": "rimraf dist/ && webpack --env production --config webpack.config.js",
@@ -33,7 +33,6 @@
     "@sonr-io/types": "1.0.0",
     "ts-loader": "^9.2.8",
     "webpack": "^5.70.0",
-    "webpack-cli": "^4.9.2",
-    "@sonr-io/types": "1.0.0"
+    "webpack-cli": "^4.9.2"
   }
 }

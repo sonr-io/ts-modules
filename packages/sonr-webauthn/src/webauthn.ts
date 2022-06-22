@@ -54,7 +54,6 @@ export class WebAuthn {
 
             const reqBody: string = await response?.text();
             const makeCredentialOptions: PublicKeyCredentialCreationOptions = JSON.parse(reqBody).publicKey;
-            console.log(`Credential Creation Options: ${makeCredentialOptions}`);
             decodeCredentialsFromAssertion(makeCredentialOptions, username);
             makeCredentialOptions.rp.id = window.location.hostname;
             return makeCredentialOptions;
@@ -86,7 +85,6 @@ export class WebAuthn {
 
             const reqBody: string = await response?.text();
             const makeCredentialOptions: any = JSON.parse(reqBody);
-            console.log(`Credential Creation Options: ${makeCredentialOptions}`);
             if (makeCredentialOptions.publicKey)
             {
                 decodeCredentialsFromAssertion(makeCredentialOptions, username);

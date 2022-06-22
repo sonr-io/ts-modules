@@ -9,6 +9,7 @@ import {
     createAuthenicator,
     decodeCredentialsFromAssertion,
 } from "./utils";
+import { config } from "process";
 
 export class WebAuthn {
     private _options: ConfigurationOptions;
@@ -34,7 +35,7 @@ export class WebAuthn {
     * @returns Credential
     */
     public async StartRegistration(): Promise<PublicKeyCredentialCreationOptions | undefined> {
-        const url: string = "https://highway-f2xzikbm3-sonr.vercel.app" + makeCredentialsEndpoint;
+        const url: string = makeCredentialsEndpoint;
         const username: string = this._sessionState.UserName;
 
         try {
@@ -113,7 +114,11 @@ export class WebAuthn {
                     throw new Error("No Credential Registered, aborting");
                 }
 
-                let url: string = buildFinishRegistrationEndpoint(assertionEndpoint, this._sessionState.DisplayName, "label");
+                let url: string = buildFinishRegistrationEndpoint(
+                    assertionEndpoint,
+                    this._sessionState.DisplayName,
+                    this._options.deviceLabel
+                );
 
                 const verificationObject: any = createAssertion(this._sessionState.Credential);
                 const serializedCred: string = JSON.stringify(verificationObject);
@@ -157,8 +162,12 @@ export class WebAuthn {
     public FinishLogin({ credential }: { credential: PublicKeyCredential; } ): Promise<Result<boolean>> {
         return new Promise((resolve, reject) => {
             try {
-                window.location.hostname
-                const url: string = authenticateUserEndpoint;
+                const url: string = buildFinishRegistrationEndpoint(
+                    authenticateUserEndpoint,
+                    this._sessionState.DisplayName,
+                    this._options.deviceLabel
+                );
+
                 const verificationObject: any = createAuthenicator(credential);
                 const serializedCred: string = JSON.stringify(verificationObject);
                 verificationObject && fetch(url + '/' + this._sessionState.UserName, {

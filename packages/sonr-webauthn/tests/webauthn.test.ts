@@ -9,6 +9,7 @@ let config: ConfigurationOptions;
 beforeEach(() => {
     config = {
         name: "test",
+        deviceLabel: "phone",
         crossOrigin: false,
         rpId: "Sonr",
     };

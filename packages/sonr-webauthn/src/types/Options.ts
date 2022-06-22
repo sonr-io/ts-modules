@@ -1,5 +1,6 @@
 export interface ConfigurationOptions {
     name: string;
+    deviceLabel: string,
     crossOrigin: boolean;
     rpId: string;
     useMocks?: boolean;

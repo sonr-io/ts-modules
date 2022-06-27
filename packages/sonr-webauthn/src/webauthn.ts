@@ -56,7 +56,6 @@ export class WebAuthn {
             const reqBody: any = await response?.json();
             const makeCredentialOptions: PublicKeyCredentialCreationOptions = reqBody.publicKey;
             decodeCredentialsFromAssertion(makeCredentialOptions, username);
-
             return makeCredentialOptions;
         } catch (e)
         {
@@ -84,8 +83,8 @@ export class WebAuthn {
                 };
             }
 
-            const reqBody: string = await response?.text();
-            const makeCredentialOptions: any = JSON.parse(reqBody);
+            const reqBody: string = await response?.json();
+            const makeCredentialOptions: any = reqBody;
             if (makeCredentialOptions.publicKey)
             {
                 decodeCredentialsFromAssertion(makeCredentialOptions, username);
@@ -127,12 +126,12 @@ export class WebAuthn {
                     method: 'POST',
                     body: serializedCred,
                 }).then(async function(response: Response) {
-                    const reqBody: string = await response.text();
-
                     if (response.status < 200 || response.status > 299)
                     {
-                        throw new Error(`Error while creating credential assertion: ${reqBody}`);
+                        throw new Error(`Request status non success`);
                     }
+
+                    const reqBody: any = await response.json();
                     resolve({
                         status: Status.success,
                         result: true,

@@ -7,16 +7,6 @@ module.exports = (env) => {
 
   return {
     entry: './src/index.ts',
-    externals: {
-      'react': { // import react from an external module so you don't have multiple instances
-          'commonjs': 'react', 
-          'amd': 'react'
-      },
-      'react-dom': { // some versions of react had links to react-dom so its good to include this
-          'commonjs': 'react-dom',
-          'amd': 'react-dom'
-      }
-    },
     target: 'es6',
     mode: isProd ? 'production' : 'development',
     module: {

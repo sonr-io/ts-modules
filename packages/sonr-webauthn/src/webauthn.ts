@@ -9,7 +9,6 @@ import {
     createAuthenicator,
     decodeCredentialsFromAssertion,
 } from "./utils";
-import { config } from "process";
 
 export class WebAuthn {
     private _options: ConfigurationOptions;

@@ -3,11 +3,6 @@ export interface ConfigurationOptions {
     deviceLabel: string,
     crossOrigin: boolean;
     rpId: string;
-    useMocks?: boolean;
-    registrationStartEndpoint?: string,
-    registrationFinishEndpoint?: string,
-    loginStartEndpoint?: string,
-    loginFinishEndpoint?: string,
     registrationHooks?: RegistrationHookDefinition;
     logingHooks?: AuthenticationHookDefinition;
 };

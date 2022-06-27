@@ -53,10 +53,10 @@ export class WebAuthn {
                 return undefined;
             }
 
-            const reqBody: string = await response?.text();
-            const makeCredentialOptions: PublicKeyCredentialCreationOptions = JSON.parse(reqBody).publicKey;
+            const reqBody: any = await response?.json();
+            const makeCredentialOptions: PublicKeyCredentialCreationOptions = reqBody.publicKey;
             decodeCredentialsFromAssertion(makeCredentialOptions, username);
-            makeCredentialOptions.rp.id = window.location.hostname;
+
             return makeCredentialOptions;
         } catch (e)
         {

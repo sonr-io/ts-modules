@@ -44,7 +44,7 @@ export function createAuthenicator(credential: PublicKeyCredential): any {
  * 
  * @returns BrowserSupport Support status indicating compatibility for webauthn
  */
-export function detectWebAuthnSupport(config: ConfigurationOptions): BrowserSupport {
+export function detectWebAuthnSupport(): BrowserSupport {
     if (window.PublicKeyCredential === undefined ||
         typeof window.PublicKeyCredential !== "function") {
         if (window.location.protocol === "http:") {

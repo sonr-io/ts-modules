@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <script src="wasm_exec.js"></script>
+    </head>
+    <body>
+        <script src="loader.js"></script>
+        <div>
+            <div>
+                <button id="create-wallet">
+                    Create Wallet
+                </button>
+            </div>
+            <div id="out-put-anchor">
+                <h2 id="output-status"> </h2>
+                <p id="output-wallet-data">
+                    Wallet is empty
+                </p>
+            </div>
+        </div>
+        <script>
+            const tag = document.getElementById("output-status");
+            const bttn = document.getElementById("create-wallet");
+
+            function timer() {
+                const d = new Date();
+                document.getElementById("output-status").innerHTML = d.toLocaleTimeString();
+            }
+
+            bttn.addEventListener("click", async function() {
+                let myVar = setInterval(timer, 100);
+                tag.innerText = "Creating Wallet"
+                setTimeout(async () => {
+                    const timer =
+                    await createWallet()
+                    tag.innerText = "Done Creating Wallet"
+                })
+            })
+        </script>
+    </body>
+</html>

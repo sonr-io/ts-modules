@@ -1,9 +1,8 @@
 <html>
     <head>
-        <script src="wasm_exec.js"></script>
+        
     </head>
     <body>
-        <script src="loader.js"></script>
         <div>
             <div>
                 <button id="create-wallet">
@@ -17,7 +16,9 @@
                 </p>
             </div>
         </div>
+        <script src="index.js"></script>
         <script>
+            self.bootstrapMotorLib()
             const tag = document.getElementById("output-status");
             const bttn = document.getElementById("create-wallet");
 
@@ -27,13 +28,9 @@
             }
 
             bttn.addEventListener("click", async function() {
-                let myVar = setInterval(timer, 100);
                 tag.innerText = "Creating Wallet"
-                setTimeout(async () => {
-                    const timer =
-                    await createWallet()
-                    tag.innerText = "Done Creating Wallet"
-                })
+                self.createWallet();
+                tag.innerText = "Done Creating Wallet"
             })
         </script>
     </body>

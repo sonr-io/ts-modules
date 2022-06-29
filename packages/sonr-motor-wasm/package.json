@@ -5,12 +5,17 @@
   "main": "script.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --env production --config webpack.config.js"
+    "build": "rollup -c"
   },
   "keywords": [],
   "author": "Sonr-io",
   "license": "GPLV2",
   "devDependencies": {
-    "express": "^4.18.1"
+    "@go-courier/rollup-plugin-go-wasm": "^0.1.1",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@rollup/plugin-wasm": "^5.2.0",
+    "express": "^4.18.1",
+    "node-fetch-polyfill": "^2.0.6",
+    "rollup": "^2.75.7"
   }
 }

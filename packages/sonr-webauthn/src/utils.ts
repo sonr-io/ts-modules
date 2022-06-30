@@ -1,5 +1,6 @@
 import { BrowserSupport } from "./enums";
 import { storageKey } from "./constants";
+import { ConfigurationOptions } from "./types";
 
 export function getStorageKey(): string  { return storageKey; }
 

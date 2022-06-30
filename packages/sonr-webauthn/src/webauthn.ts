@@ -34,7 +34,7 @@ export class WebAuthn {
     * @returns Credential
     */
     public async StartRegistration(): Promise<PublicKeyCredentialCreationOptions | undefined> {
-        const url: string = "https://highway-f2xzikbm3-sonr.vercel.app" + makeCredentialsEndpoint;
+        const url: string = makeCredentialsEndpoint;
         const username: string = this._sessionState.UserName;
 
         try {
@@ -52,11 +52,9 @@ export class WebAuthn {
                 return undefined;
             }
 
-            const reqBody: string = await response?.text();
-            const makeCredentialOptions: PublicKeyCredentialCreationOptions = JSON.parse(reqBody).publicKey;
-            console.log(`Credential Creation Options: ${makeCredentialOptions}`);
+            const reqBody: any = await response?.json();
+            const makeCredentialOptions: PublicKeyCredentialCreationOptions = reqBody.publicKey;
             decodeCredentialsFromAssertion(makeCredentialOptions, username);
-            makeCredentialOptions.rp.id = window.location.hostname;
             return makeCredentialOptions;
         } catch (e)
         {
@@ -84,9 +82,8 @@ export class WebAuthn {
                 };
             }
 
-            const reqBody: string = await response?.text();
-            const makeCredentialOptions: any = JSON.parse(reqBody);
-            console.log(`Credential Creation Options: ${makeCredentialOptions}`);
+            const reqBody: string = await response?.json();
+            const makeCredentialOptions: any = reqBody;
             if (makeCredentialOptions.publicKey)
             {
                 decodeCredentialsFromAssertion(makeCredentialOptions, username);
@@ -115,7 +112,11 @@ export class WebAuthn {
                     throw new Error("No Credential Registered, aborting");
                 }
 
-                let url: string = buildFinishRegistrationEndpoint(assertionEndpoint, this._sessionState.DisplayName, "label");
+                let url: string = buildFinishRegistrationEndpoint(
+                    assertionEndpoint,
+                    this._sessionState.DisplayName,
+                    this._options.deviceLabel
+                );
 
                 const verificationObject: any = createAssertion(this._sessionState.Credential);
                 const serializedCred: string = JSON.stringify(verificationObject);
@@ -124,12 +125,12 @@ export class WebAuthn {
                     method: 'POST',
                     body: serializedCred,
                 }).then(async function(response: Response) {
-                    const reqBody: string = await response.text();
-
                     if (response.status < 200 || response.status > 299)
                     {
-                        throw new Error(`Error while creating credential assertion: ${reqBody}`);
+                        throw new Error(`Request status non success`);
                     }
+
+                    const reqBody: any = await response.json();
                     resolve({
                         status: Status.success,
                         result: true,
@@ -159,8 +160,12 @@ export class WebAuthn {
     public FinishLogin({ credential }: { credential: PublicKeyCredential; } ): Promise<Result<boolean>> {
         return new Promise((resolve, reject) => {
             try {
-                window.location.hostname
-                const url: string = authenticateUserEndpoint;
+                const url: string = buildFinishRegistrationEndpoint(
+                    authenticateUserEndpoint,
+                    this._sessionState.DisplayName,
+                    this._options.deviceLabel
+                );
+
                 const verificationObject: any = createAuthenicator(credential);
                 const serializedCred: string = JSON.stringify(verificationObject);
                 verificationObject && fetch(url + '/' + this._sessionState.UserName, {

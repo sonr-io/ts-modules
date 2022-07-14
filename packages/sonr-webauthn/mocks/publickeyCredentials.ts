@@ -1,7 +1,7 @@
 export const keyCredentialOption: () => any = () => {
     return  {
         publicKey: {
-            challenge: "XSASDACVDVSDFSDF",
+            challenge: "Yb52bYi-UCnlg8HoSyGAOcZZvvmdwLfrv1Oq1aVfb30",
             rp: {
                 name: "Duo Security",
                 id: "duosecurity.com",

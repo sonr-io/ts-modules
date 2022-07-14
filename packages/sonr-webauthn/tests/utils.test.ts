@@ -26,7 +26,7 @@ test('buffer2string should return decoded string from buffer', () => {
 test('decode publick key optionns', () => {
     const credOptions: PublicKeyCredentialCreationOptions = keyCredentialOption().publicKey;
     decodeCredentialsFromAssertion(credOptions, "dev");
-    expect(credOptions.challenge).toBeInstanceOf(Uint8Array);
-    expect(credOptions.user.id).toBeInstanceOf(Uint8Array);
+    expect(credOptions.challenge).toBeInstanceOf(String);
+    expect(credOptions.user.id).toBeInstanceOf(String);
 });
 

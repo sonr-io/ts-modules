@@ -7,6 +7,7 @@ import {
     buildFinishRegistrationEndpoint,
     createAssertion,
     createAuthenicator,
+    decodeCredentialRequestOptions,
     decodeCredentialsFromAssertion,
 } from "./utils";
 
@@ -69,7 +70,7 @@ export class WebAuthn {
     * @param name domain name to be used for credential creation
     * @returns Credential
     */
-    public async StartLogin(): Promise<Result<Credential>> {
+    public async StartLogin(): Promise<Result<PublicKeyCredentialRequestOptions>> {
         const url: string = verifyAssertionEndpoint;
         const username: string = this._sessionState.UserName;
         try {
@@ -82,14 +83,18 @@ export class WebAuthn {
                 };
             }
 
-            const reqBody: string = await response?.json();
-            const makeCredentialOptions: any = reqBody;
-            if (makeCredentialOptions.publicKey)
+            const reqBody: any = await response?.json();
+            const makeCredentialOptions: PublicKeyCredentialCreationOptions = reqBody.publicKey;
+            if (makeCredentialOptions)
             {
-                decodeCredentialsFromAssertion(makeCredentialOptions, username);
+                decodeCredentialRequestOptions(makeCredentialOptions);
             }
 
-            return makeCredentialOptions.publicKey;
+            return {
+                error: undefined,
+                result: makeCredentialOptions,
+                status: Status.success
+            };
         } catch (e)
         {
             console.error(`Error while making user credentials: ${e.message}`);
@@ -168,7 +173,7 @@ export class WebAuthn {
 
                 const verificationObject: any = createAuthenicator(credential);
                 const serializedCred: string = JSON.stringify(verificationObject);
-                verificationObject && fetch(url + '/' + this._sessionState.UserName, {
+                verificationObject && fetch(url, {
                     credentials: "same-origin",
                     method: 'POST',
                     body: serializedCred,

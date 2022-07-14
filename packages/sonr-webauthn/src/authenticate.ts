@@ -29,10 +29,10 @@ export async function startUserLogin(options: ConfigurationOptions): Promise<boo
         authn.WithSessionState(sessionState);
 
 
-        const credential: Result<Credential> = await authn.StartLogin();
+        const credential: Result<PublicKeyCredentialRequestOptions> = await authn.StartLogin();
         options?.logingHooks?.afterStart();
 
-        const newCredential: Credential | void = await getCredentials(credential as unknown as PublicKeyCredentialCreationOptions);
+        const newCredential: Credential | void = await getCredentials(credential.result);
         console.info(`Credentials created for ${options.name}`);
 
         const result: Result<boolean> = await authn.FinishLogin({ credential: newCredential as PublicKeyCredential });

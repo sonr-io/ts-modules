@@ -29,8 +29,8 @@ export async function createCredentials(
 /*
     Navigator Credentials to query on the endpoint
 */
-export async function getCredentials(pk: PublicKeyCredentialCreationOptions): Promise<Credential | null> {
-    if (!pk) return null;
+export async function getCredentials(pk: PublicKeyCredentialRequestOptions): Promise<Credential | null> {
+    if (!pk) return;
     
     try
     {

@@ -49,3 +49,24 @@ export async function getCredentials(pk: PublicKeyCredentialRequestOptions): Pro
         throw e; // throw error back to the caller to handle.
     }
 };
+
+/*
+    Navigator Credentials to query on the endpoint
+*/
+export async function storeCredentials(credential: Credential): Promise<Credential | null> {
+    if (!credential) return;
+    
+    try
+    {
+        const browserSupport: BrowserSupport = detectWebAuthnSupport();
+        if (browserSupport == BrowserSupport.NonHttps 
+            || browserSupport == BrowserSupport.Unsupported)
+            throw new Error("Browser does not support credentials");
+        const credResponse: Credential = await navigator.credentials.store(credential)
+        return credResponse;
+    } catch(e)
+    {
+        console.error(`Error while getting public key credentials ${e.message}`);
+        throw e; // throw error back to the caller to handle.
+    }
+};

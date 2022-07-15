@@ -110,7 +110,7 @@ export class WebAuthn {
     * Finalizes user registration within the sonr registry.
     * Once presisted name is valid within sonr name registry
     */
-    public async FinishRegistration(): Promise<Result<boolean>> {
+    public async FinishRegistration(): Promise<Result<Credential>> {
         return new Promise((resolve, reject) => {
             try {
                 if (!this._sessionState.Credential) {
@@ -138,7 +138,7 @@ export class WebAuthn {
                     const reqBody: any = await response.json();
                     resolve({
                         status: Status.success,
-                        result: true,
+                        result: reqBody,
                     });
                 }).catch(function(err) {
                     console.log(err.name);
@@ -159,10 +159,10 @@ export class WebAuthn {
 
     /**
      * 
-     * @param param0 
-     * @returns 
+     * @param Credential
+     * @returns Promise<Result<Credential>>
      */
-    public FinishLogin({ credential }: { credential: PublicKeyCredential; } ): Promise<Result<boolean>> {
+    public FinishLogin({ credential }: { credential: PublicKeyCredential; } ): Promise<Result<Credential>> {
         return new Promise((resolve, reject) => {
             try {
                 const url: string = buildFinishRegistrationEndpoint(
@@ -178,8 +178,7 @@ export class WebAuthn {
                     method: 'POST',
                     body: serializedCred,
                 }).then(async function(response: Response) {
-                    const reqBody: string = await response.text();
-    
+                    const reqBody: any = await response.json();
                     if (response.status < 200 || response.status > 299)
                     {
                         throw new Error(`Error while creating credential assertion: ${reqBody}`);
@@ -197,7 +196,6 @@ export class WebAuthn {
                     });
                 });
             } catch(err) {
-                console.log(`Error while getting credential assertion: ${err.message}`);
                 reject({
                     error: err,
                     status: Status.error

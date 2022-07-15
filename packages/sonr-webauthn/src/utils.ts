@@ -37,16 +37,21 @@ export function createAuthenicator(credential: PublicKeyCredential): any {
     if (!credential)
         return {};
 
+    let authData = new Uint8Array((credential.response as any).authenticatorData);
+    let clientDataJSON = new Uint8Array((credential.response as any).clientDataJSON);
+    let rawId = new Uint8Array(credential.rawId);
+    let sig = new Uint8Array((credential.response as any).signature);
+    let userHandle = new Uint8Array((credential.response as any).userHandle);
+    
     return {
         id: credential.id,
-        rawId: bufferEncode(credential.rawId as Uint8Array),
+        rawId: bufferEncode(rawId),
         type: credential.type,
         response: {
-            authenticatorData: bufferEncode((credential.response as any).authenticatorData),
-            //attestationObject: bufferEncode((credential.response as any).attestationObject),
-            clientDataJSON: bufferEncode((credential.response as any).clientDataJSON),
-            signature: bufferEncode((credential.response as any).signature),
-            userHandle: bufferEncode((credential.response as any).userHandle)
+            authenticatorData: bufferEncode(authData),
+            clientDataJSON: bufferEncode(clientDataJSON),
+            signature: bufferEncode(sig),
+            userHandle: bufferEncode(userHandle),
         },
     };
 }

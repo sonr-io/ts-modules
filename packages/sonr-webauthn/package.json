@@ -1,6 +1,6 @@
 {
   "name": "@sonr-io/webauthn",
-  "version": "0.0.4",
+  "version": "0.0.7",
   "description": "webauthn imeplentation for sonr highway-sdk",
   "homepage": "https://github.com/sonr-io/ts-modules/",
   "directories": {
@@ -9,9 +9,9 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "dist/main.js",
-  "module": "dist/main.js",
-  "types": "lib/types/index",
+  "main": "dist/main",
+  "module": "dist/main",
+  "types": "lib/index",
   "scripts": {
     "bundle:prod": "rimraf dist/ && webpack --env production --config webpack.config.js",
     "bundle:dev": "rimraf dist/ && webpack --env develop --config webpack.config.js",
@@ -27,6 +27,7 @@
   "license": "GPLV2",
   "dependencies": {
     "@sonr-io/validation": "1.0.1",
+    "base64-js": "^1.5.1",
     "buffer": "^6.0.3"
   },
   "devDependencies": {

@@ -9,17 +9,26 @@ function resolveMessage(message) {
         if (!self[funcName])
             return
         
-        var value;
-        if (params && params.array)
-            value = self[funcName](...params)
-        else
-            value = self[funcName]()
-    
-        postMessage({
-            status: 200,
-            response: value,
-            error: undefined
-        })
+        try
+        {
+            var value;
+            if (params && params.array)
+                value = self[funcName](...params)
+            else
+                value = self[funcName]()
+            postMessage({
+                status: 200,
+                response: value,
+                error: undefined
+            })
+        } catch(e)
+        {
+            postMessage({
+                status: 500,
+                response: value,
+                error: e
+            })
+        }
     }
     catch(e)
     {

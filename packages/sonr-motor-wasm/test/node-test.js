@@ -1,8 +1,15 @@
 require('./../src/polyfis');
 require('./../lib/wasm_exec');
-const path = require('path');
 
+const path = require('path');
 const fs = require('fs');
+
+if (!globalThis.crypto)
+    globalThis.crypto = require('node:crypto').webcrypto;
+
+if (!globalThis.fetch)
+    globalThis.fetch = require('node-fetch-polyfill')
+
 
 const wasmBuffer = fs.readFileSync(path.join(__dirname, '../lib/sonr-motor.wasm'));
 const runtime = new Go()

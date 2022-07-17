@@ -34,8 +34,7 @@ export async function startUserRegistration(options: ConfigurationOptions): Prom
         authn.SessionState.Credential = newCredential as PublicKeyCredential;
         const resp: Result<Credential> = await authn.FinishRegistration();
         options?.registrationHooks?.afterFinish();
-        
-
+    
         return resp.result as PublicKeyCredential;
 
     } catch(e)

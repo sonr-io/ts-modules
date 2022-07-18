@@ -34,7 +34,7 @@ export class WebAuthn {
     * @param name domain name to be used for credential creation
     * @returns Credential
     */
-    public async StartRegistration(): Promise<PublicKeyCredentialCreationOptions | undefined> {
+    public async StartRegistration(): Promise<Result<PublicKeyCredentialCreationOptions>> {
         const url: string = makeCredentialsEndpoint;
         const username: string = this._sessionState.UserName;
 
@@ -56,11 +56,19 @@ export class WebAuthn {
             const reqBody: any = await response?.json();
             const makeCredentialOptions: PublicKeyCredentialCreationOptions = reqBody.publicKey;
             decodeCredentialsFromAssertion(makeCredentialOptions, username);
-            return makeCredentialOptions;
+            return {
+                error: undefined,
+                result: makeCredentialOptions,
+                status: Status.success
+            };
         } catch (e)
         {
             console.error(`Error while making user credentials: ${e.message}`);
-            throw e;
+            return {
+                error: e,
+                result: undefined,
+                status: Status.error
+            };
         }
     }
 

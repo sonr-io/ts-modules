@@ -7,7 +7,7 @@ import { SessionState } from "./state";
 /**
  * 
  * @param options configuration object for webAuthentication options
- * @returns boolean indicating status of registration operation
+ * @returns PublicKeyCredential
  */
 export async function startUserRegistration(options: ConfigurationOptions): Promise<PublicKeyCredential> {
     if (!options)
@@ -23,7 +23,7 @@ export async function startUserRegistration(options: ConfigurationOptions): Prom
 
         authn.WithSessionState(sessionState);
 
-        const credential: PublicKeyCredentialCreationOptions | void = await authn.StartRegistration();
+        const credential: Result<PublicKeyCredentialCreationOptions> = await authn.StartRegistration();
         options?.registrationHooks?.afterStart();
         const newCredential: Credential | void = await createCredentials(
             credential as unknown as PublicKeyCredentialCreationOptions

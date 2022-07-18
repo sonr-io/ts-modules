@@ -48,10 +48,10 @@ test("Expect Start Login to be defined", () => {
 test("Expect StartRegistration to return publickey option", () => {
     expect(instance.StartRegistration).toBeDefined()
     //@ts-ignore
-    instance.StartRegistration().then((option: PublicKeyCredentialCreationOptions | undefined) => {
-        expect(option).toBeDefined();
-        expect(option?.challenge).toBeDefined()
-        expect(option?.user).toBeDefined()
+    instance.StartRegistration().then((option: Result<PublicKeyCredentialCreationOptions>) => {
+        expect(option?.result).toBeDefined();
+        expect(option?.result?.challenge).toBeDefined()
+        expect(option?.result?.user).toBeDefined()
     })
 });
 

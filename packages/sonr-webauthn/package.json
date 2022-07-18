@@ -1,6 +1,6 @@
 {
   "name": "@sonr-io/webauthn",
-  "version": "0.0.7",
+  "version": "0.0.6",
   "description": "webauthn imeplentation for sonr highway-sdk",
   "homepage": "https://github.com/sonr-io/ts-modules/",
   "directories": {

@@ -1,6 +1,6 @@
 import { BrowserSupport } from "./enums";
 import { storageKey } from "./constants";
-import { ConfigurationOptions } from "./types";
+const base64js = require('base64-js');
 
 export function getStorageKey(): string  { return storageKey; }
 
@@ -11,31 +11,47 @@ export function createAssertion(credential: PublicKeyCredential): any {
     if (!credential)
         return {};
 
+    const attestationResp = new Uint8Array((credential.response as any).attestationObject);
+    const clientDataJSON = new Uint8Array((credential.response as any).clientDataJSON);
+
     return {
         id: credential.id,
         rawId: bufferEncode(credential.rawId as Uint8Array),
         type: credential.type,
         response: {
-            attestationObject: bufferEncode((credential.response as any).attestationObject),
-            clientDataJSON: bufferEncode((credential.response as any).clientDataJSON),
+            attestationObject: bufferEncode(attestationResp),
+            clientDataJSON: bufferEncode(clientDataJSON),
         },
     };
+}
+
+function decodeAssertionClientResponse(clientResponse: ArrayBuffer, key: string): ArrayBuffer {
+    const clientResponseStr: string = new TextDecoder().decode(clientResponse);
+    var obj: any = JSON.parse(clientResponseStr)
+    obj["challenge"] = atob(obj[key])
+
+    return new TextEncoder().encode(JSON.stringify(obj))
 }
 
 export function createAuthenicator(credential: PublicKeyCredential): any {
     if (!credential)
         return {};
 
+    let authData = new Uint8Array((credential.response as any).authenticatorData);
+    let clientDataJSON = new Uint8Array((credential.response as any).clientDataJSON);
+    let rawId = new Uint8Array(credential.rawId);
+    let sig = new Uint8Array((credential.response as any).signature);
+    let userHandle = new Uint8Array((credential.response as any).userHandle);
+    
     return {
         id: credential.id,
-        rawId: bufferEncode(credential.rawId as Uint8Array),
+        rawId: bufferEncode(rawId),
         type: credential.type,
         response: {
-            authenticatorData: bufferEncode((credential.response as any).authenticatorData),
-            //attestationObject: bufferEncode((credential.response as any).attestationObject),
-            clientDataJSON: bufferEncode((credential.response as any).clientDataJSON),
-            signature: bufferEncode((credential.response as any).signature),
-            userHandle: bufferEncode((credential.response as any).userHandle)
+            authenticatorData: bufferEncode(authData),
+            clientDataJSON: bufferEncode(clientDataJSON),
+            signature: bufferEncode(sig),
+            userHandle: bufferEncode(userHandle),
         },
     };
 }
@@ -89,16 +105,18 @@ export function encodeCredentialsForAssertion(assertedCredential: any): any {
  * @param assertedCredential  key credentials
  * @returns status (bool)
  */
-export function decodeCredentialsFromAssertion(assertedCredential: PublicKeyCredentialCreationOptions, username: string): boolean {
-    if(assertedCredential)
-    {
+export function decodeCredentialsFromAssertion(assertedCredential: any, username: string): boolean {
+    if(assertedCredential) {
         assertedCredential.challenge = bufferDecode(assertedCredential.challenge);
-        assertedCredential.user.id = bufferDecode(assertedCredential.user.id);
-        assertedCredential.user.name  = username;
         assertedCredential.excludeCredentials && assertedCredential.excludeCredentials.forEach(function (listItem) {
             if (!listItem) { return }
             listItem.id = bufferDecode(listItem.id);
         });
+
+        if (assertedCredential.user) {
+            assertedCredential.user.id = bufferDecode(assertedCredential.user.id);
+            assertedCredential.user.name  = username;
+        }
 
         return true;
     }
@@ -106,10 +124,17 @@ export function decodeCredentialsFromAssertion(assertedCredential: PublicKeyCred
     return false;
 };
 
+export function decodeCredentialRequestOptions(makeAssertionOptions: PublicKeyCredentialRequestOptions) {
+    makeAssertionOptions.challenge = bufferDecode((makeAssertionOptions.challenge as unknown as string));
+    makeAssertionOptions.allowCredentials.forEach(function (listItem) {
+        listItem.id = bufferDecode(listItem.id as unknown as string)
+    });
+}
+
+
 /*
     Buffer Helpers
 */
-
 export function string2buffer(data: string) {
     return new Uint8Array(data.length).map(function(x, i) {
         return data.charCodeAt(i);
@@ -122,19 +147,15 @@ export function string2buffer(data: string) {
 * @returns string base64
 */
 export function bufferEncode(value: ArrayBuffer): string {
-    console.log(value);
-    const base65Str: string = Buffer.from(value)
-    .toString("base64")
+   return base64js.fromByteArray(value)
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=/g, "");
-
-    return base65Str;
 }
 
 
-export function bufferDecode(value): Uint8Array {
-    return Uint8Array.from(Buffer.from(value));
+export function bufferDecode(value: string): Uint8Array {
+    return Uint8Array.from(atob(value), c => c.charCodeAt(0));
 }
 
 /**
@@ -149,7 +170,7 @@ export function buffer2string(buf: Uint8Array): string {
 
     for (let i =0; i < buf.length; i ++) {
         str += String.fromCharCode(buf[i]);
-    };
+    }
 
     return str;
 }

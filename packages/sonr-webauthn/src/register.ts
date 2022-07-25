@@ -1,4 +1,4 @@
-import { createCredentials } from "./credentials";
+import { createCredentials, storeCredentials } from "./credentials";
 import { ConfigurationOptions } from "./types/Options";
 import { WebAuthn } from "./webauthn";
 import { Result, Status } from "./types/Result";
@@ -24,22 +24,25 @@ export async function startUserRegistration(options: ConfigurationOptions): Prom
         authn.WithSessionState(sessionState);
 
         const credential: Result<PublicKeyCredentialCreationOptions> = await authn.StartRegistration();
+        if (credential?.error) {
+            throw new Error("Error while getting public key credential options")
+        }
+        
         options?.registrationHooks?.afterStart();
         const newCredential: Credential | void = await createCredentials(
-            credential as unknown as PublicKeyCredentialCreationOptions
+            credential.result as unknown as PublicKeyCredentialCreationOptions
         );
         
         console.info(`Credentials created for ${options.name}`);
-        console.log(newCredential);
         authn.SessionState.Credential = newCredential as PublicKeyCredential;
         const resp: Result<Credential> = await authn.FinishRegistration();
         options?.registrationHooks?.afterFinish();
-    
+        storeCredentials(resp.result);
+
         return resp.result as PublicKeyCredential;
 
     } catch(e)
     {
-        console.error(`Error while registering endpoint: ${e}`);
-        throw e;
+
     }
 }

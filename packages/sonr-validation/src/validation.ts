@@ -50,6 +50,7 @@ export function HasAtLeastOneLowercaseCharacter (str: string): Error | true  {
 
 export function HasAtLeastOneNumber (str: string): Error | true  {
     if(!/\d+/.test(str)) return new ErrorHasAtLeastOneNumber()
+    return true
 }
 
 export function NoSpaces (value: string): Error | true  {

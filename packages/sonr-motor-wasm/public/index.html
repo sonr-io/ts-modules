@@ -1,0 +1,37 @@
+<html>
+    <head>
+        
+    </head>
+    <body>
+        <div>
+            <div>
+                <button id="create-wallet">
+                    Create Wallet
+                </button>
+            </div>
+            <div id="out-put-anchor">
+                <h2 id="output-status"> </h2>
+                <p id="output-wallet-data">
+                    Wallet is empty
+                </p>
+            </div>
+        </div>
+        <script src="index.js"></script>
+        <script>
+            self.bootstrapMotorLib()
+            const tag = document.getElementById("output-status");
+            const bttn = document.getElementById("create-wallet");
+
+            function timer() {
+                const d = new Date();
+                document.getElementById("output-status").innerHTML = d.toLocaleTimeString();
+            }
+
+            bttn.addEventListener("click", async function() {
+                tag.innerText = "Creating Wallet"
+                self.createWallet();
+                tag.innerText = "Done Creating Wallet"
+            })
+        </script>
+    </body>
+</html>

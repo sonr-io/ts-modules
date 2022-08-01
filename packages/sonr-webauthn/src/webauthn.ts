@@ -149,14 +149,12 @@ export class WebAuthn {
                         result: reqBody,
                     });
                 }).catch(function(err) {
-                    console.log(err.name);
                     reject({
                         error: err,
                         status: Status.error
                     });
                 });
             } catch(err) {
-                console.log(`Error while getting credential assertion: ${err.message}`);
                 reject({
                     error: err,
                     status: Status.error
@@ -191,13 +189,11 @@ export class WebAuthn {
                     {
                         throw new Error(`Error while creating credential assertion: ${reqBody}`);
                     }
-                    console.log(true);
                     resolve({
                         result: verificationObject,
                         status: Status.success
                     });
                 }).catch(function(err) {
-                    console.log(err.name);
                     resolve({
                         error: err,
                         status: Status.error

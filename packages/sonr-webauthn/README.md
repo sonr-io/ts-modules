@@ -1,50 +1,39 @@
 # Webauthn sonr authentication
 
-[Webauthn](https://webauthn.io/) implementation for the sonr highway node implemetnation. 
+[Webauthn](https://webauthn.io/) implementation for sonr device registration 
  
-## Registration of user public key information for a sonr domain.
+## Options
 ```
-/register/name/start
-/register/name/finish
-```
-
-Public Key Credentials options 
-```
-const publicKeyCredentialCreationOptions = {
-    challenge: Uint8Array.from(
-        randomStringFromServer, c => c.charCodeAt(0)),
-    rp: {
-        name: "Duo Security",
-        id: "duosecurity.com",
-    },
-    user: {
-        id: Uint8Array.from(
-            "UZSL85T9AFC", c => c.charCodeAt(0)),
-        name: "lee@webauthn.example",
-        displayName: "Lee",
-    },
-    pubKeyCredParams: [{alg: -7, type: "public-key"}],
-    authenticatorSelection: {
-        authenticatorAttachment: "platform",
-    },
-    timeout: 60000,
-    attestation: "direct"
+interface ConfigurationOptions {
+    name: string;
+    deviceLabel: string,
+    crossOrigin: boolean;
+    rpId: string;
+    registrationHooks?: RegistrationHookDefinition;
+    logingHooks?: AuthenticationHookDefinition;
 };
-```
 
-## Authentication of user public key information for a sonr domain
-```
-/access/name/start
-/access/name/finish
-```
+interface RegistrationHookDefinition {
+    afterStart: () => void;
+    afterFinish: () => void;
+};
 
+interface AuthenticationHookDefinition {
+    afterStart: () => void;
+    afterFinish: () => void;
+}
+```
 ## Usage
 ```
-startRegistration(/* options */); -> returns a status of true / false
+startRegistration(/* options */).then((publicKey: PublicKeyCredential) => {
+
+})
 ```
 
 ```
-startAuthentication(/* options */); -> returns a status of true / false
+startAuthentication(/* options */).then((publicKey: PublicKeyCredential) => {
+
+})
 ```
 
 # Development

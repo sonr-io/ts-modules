@@ -34,17 +34,14 @@ export async function startUserLogin(options: ConfigurationOptions): Promise<Pub
 
         const newCredential: Credential | void = await getCredentials(credential.result);
 
-        const result: Result<Credential> = await authn.FinishLogin({
+        const resp: Result<Credential> = await authn.FinishLogin({
             credential: newCredential as PublicKeyCredential
         });
-        storeCredentials(newCredential)
 
         options?.logingHooks?.afterFinish();
-
+        storeCredentials(resp.result);
         return newCredential as PublicKeyCredential;
 
     } catch(e)
-    {
-        return undefined;
-    }
+    { }
 }
